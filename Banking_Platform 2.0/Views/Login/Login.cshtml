@@ -1,0 +1,82 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.LoginDTO
+@{
+    ViewBag.Title = "Login Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+
+<body>
+
+    <div class="container-fluid min-vh-100 d-flex align-items-center">
+        <div class="row w-100">
+
+            <!-- Left Content -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="left-content text-dark">
+                    <div>
+                        <h2>Welcome to Urban Bank</h2>
+
+                        <p>
+                            Manage your finances confidently with fast, secure, and convenient online banking services.
+                        </p>
+
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle-fill me-2"></i> Real-time account access</li>
+                            <li><i class="bi bi-check-circle-fill me-2"></i> Multi-layered security</li>
+                            <li><i class="bi bi-check-circle-fill me-2"></i> Instant fund transfers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="login-card">
+
+                    <div class="text-center mb-4">
+                        <h4 class="fw-bold">SecureBank Login</h4>
+                        <p class="text-muted small mb-0">Access your online banking dashboard</p>
+                    </div>
+
+                    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="text-danger pb-2">
+                            @ViewBag.Error
+                        </div>
+
+                        <div class="input-group-custom container-fluid">
+                                <label class="form-label">Email ID Or User Name</label>
+                                <input asp-for="Identifier" type="text" placeholder="Email ID or User Name" class="form-control w-100" />
+                        </div>
+
+                        <div class="input-group-custom container-fluid">
+                            <label class="form-label">Password</label>
+                            <input asp-for="Password" type="password" placeholder="Password" class="form-control w-100"/>
+                        
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+
+                        <div class="text-center small">
+                            <a href="#" class="text-decoration-none text-muted">Forgot password?</a>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

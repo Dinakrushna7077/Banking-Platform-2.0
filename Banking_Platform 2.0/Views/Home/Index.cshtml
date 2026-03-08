@@ -1,8 +1,52 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<main>
+    <section class="py-5">
+        <div class="container text-center">
+            <h3 class="display-5 fw-bold">Welcome to Urban Banking</h3>
+            <p class="lead mb-4">Your trusted partner for secure and convenient banking.</p>
+            <a asp-area="" asp-controller="Login" asp-action="UserRegister" class="btn btn-primary btn-lg">Register Now</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="container py-5">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <i class="bi bi-phone fs-1 text-primary"></i>
+                        <h5 class="card-title mt-3">Mobile Banking</h5>
+                        <p class="card-text">Manage your accounts anytime, anywhere with our mobile app.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <i class="bi bi-shield-check fs-1 text-primary"></i>
+                        <h5 class="card-title mt-3">Secure Transactions</h5>
+                        <p class="card-text">Your security is our priority. Enjoy safe and encrypted banking.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <i class="bi bi-cash-stack fs-1 text-primary"></i>
+                        <h5 class="card-title mt-3">Easy Payments</h5>
+                        <p class="card-text">Transfer money and pay bills with just a few clicks.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="about">
+        @Html.Partial("_About")
+    </section>
+    <section id="contact">
+        @Html.Partial("_Contact")
+    </section>
+</main>

@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Assets\icon3.png" />
+    <None Include="wwwroot\Assets\IMG_20241120_212902.jpg" />
+    <None Include="wwwroot\Assets\IMG_20241120_213134.jpg" />
+    <None Include="wwwroot\Assets\IMG_20241120_213135.jpg" />
+    <None Include="wwwroot\Assets\MyProfile.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.3.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />

@@ -1,0 +1,164 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.RegistrationDTO
+@{
+    ViewBag.Title = "Register Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+    
+</head>
+<body>
+
+    <div class="container-fluid min-vh-100 d-flex align-items-center">
+        <div class="row w-100">
+
+            <!-- Left Content -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="left-content text-dark">
+                    <div>
+                        <h2>Welcome to Urban Bank</h2>
+                        <p>Manage your finances confidently with fast, secure, and convenient online banking services.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle-fill me-2"></i> Real-time account access</li>
+                            <li><i class="bi bi-check-circle-fill me-2"></i> Multi-layered security</li>
+                            <li><i class="bi bi-check-circle-fill me-2"></i> Instant fund transfers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="login-card">
+
+                    <div class="text-center mb-4">
+                        @* <h6 id="step-count" class="bg-secondary rounded w-25 h-25 text-white stepcount">1</h6> *@
+                        <h4 class="fw-bold">UrbanBank Registration</h4>
+                        <div class=" small mb-0">
+                            <span id="step-count" class="d-inline-block rounded-circle bg-secondary bg-opacity-25 ">1</span>
+                            <span id="step-msg">Verify Your Account Details</span> 
+                        </div>
+                    </div>
+
+                    @using (Html.BeginForm("Register", "User", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <!-- Step 1 -->
+                        <div id="step1">
+                            <div class="text-danger">@ViewBag.Error</div>
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">Account Number</label>
+                                <input asp-for="AccountNumber" type="text" placeholder="Account Number" class="form-control" />
+                            </div>
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">IFSC Code</label>
+                                <input asp-for="IFSC" type="text" placeholder="IFSC Code" class="form-control" />
+                            </div>
+                            <button type="button" class="btn btn-primary w-100" onclick="verifyAccount()">Verify Account</button>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div id="step2" style="display:none;">
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">Name</label>
+                                <input id="name" asp-for="FullName" type="text" class="form-control disabled" disabled/>
+                            </div>
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">Email</label>
+                                <input asp-for="Email" type="email" placeholder="Email" class="form-control" />
+                            </div>
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">Phone</label>
+                                <input asp-for="Phone" type="text" placeholder="Phone" class="form-control" />
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+                            <button type="button" class="btn btn-primary float-end" onclick="nextStep(3)">Next</button>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div id="step3" style="display:none;">
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">User Name</label>
+                                <input asp-for="UserName" type="text" placeholder="User Name" class="form-control w-100" />
+                            </div>
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">Password</label>
+                                <input asp-for="Password" type="password" placeholder="Password" class="form-control w-100" />
+                            </div>
+                            <div class="input-group-custom container-fluid">
+                                <label class="form-label">Confirm Password</label>
+                                <input asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" class="form-control" />
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                            <button type="submit" class="btn btn-success float-end">Register</button>
+                        </div>
+
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function verifyAccount() {
+            var accNo = $('#AccountNumber').val();
+            var ifsc = $('#IFSC').val();
+            if(accNo==0 || ifsc==""){
+                alert("Please enter both Account Number and IFSC Code.");
+                return;
+            }
+            $.post('@Url.Action("VerifyAccount", "User")', { AccountNumber: accNo, IFSC: ifsc }, function(res) {
+                if(res.success){
+                    $('#name').val(res.fullName);
+                    $('#step1').hide();
+                    $('#step2').show();
+                    let stepCount = parseInt($('#step-count').text());
+                    $('#step-count').text(stepCount+1);
+                    $('#step-msg').text('Verify Contact Details');
+
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+
+        function nextStep(step) {
+            $('#step2').hide();
+            $('#step3').show();
+            let stepCount = parseInt($('#step-count').text());
+            $('#step-count').text(stepCount+1);
+            if(step === 3){
+                $('#step-count').text('3');
+                $('#step-msg').text('Set Up Your Account');
+            }
+        }
+
+        function prevStep(step) {
+            let stepCount = parseInt($('#step-count').text());
+             $('#step-count').text(stepCount-1);
+            $('#step3').hide();
+            $('#step2').show();
+            if(step === 1){
+                $('#step2').hide();
+                $('#step1').show();
+            }
+            if(step === 2){
+               
+                $('#step-msg').text('Verify Contact Details');
+            }
+            if(step === 1){
+                $('#step-msg').text('Verify Your Account Details');
+            }
+        }
+    </script>
+
+</body>
+</html>
