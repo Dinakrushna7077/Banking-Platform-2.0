@@ -159,15 +159,20 @@ namespace Banking_Platform_2._0.Controllers
                 user.Email = reg.Email;
                 user.PhoneNo = reg.Phone;
                 user.Status = true;
-                user.RoleId = db.Roles.Where(r=>r.RoleName== "Customer").FirstOrDefault().RoleId;
-                
+                user.RoleId = db.Roles.Where(r => r.RoleName == "Customer").FirstOrDefault().RoleId;
+
                 db.Add(user);
                 db.SaveChanges();
                 return RedirectToAction("Login", "Login");
             }
-            catch(Exception err) { 
-                return Json(new { message = err.Message });            
+            catch (Exception err)
+            {
+                return Json(new { message = err.Message });
             }
+        }
+        public IActionResult Dashboard()
+        {
+            return View();
         }
     }
 }

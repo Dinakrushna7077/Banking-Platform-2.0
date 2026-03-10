@@ -13,41 +13,41 @@ namespace Banking_Platform_2._0.Controllers
         {
             db = _db;
         }
-        public ActionResult Dashboard()
+        public IActionResult Dashboard()
         {
             return View();
         }
-        public ActionResult Deposit()
+        public IActionResult Deposit()
         {
             Transaction tr = new Transaction();
             return PartialView("_Deposit", tr);
         }
         [HttpPost]
-        public ActionResult Deposit(Transaction tr)
+        public IActionResult Deposit(Transaction tr)
         {
             return PartialView("_Deposit");
         }
-        public ActionResult Withdraw()
+        public IActionResult Withdraw()
         {
             Transaction tr = new Transaction();
             return PartialView("_Withdraw", tr);
         }
         [HttpPost]
-        public ActionResult Withdraw(Transaction tr)
+        public IActionResult Withdraw(Transaction tr)
         {
             return PartialView("_Withdraw", tr);
         }
-        public ActionResult Transfer()
+        public IActionResult Transfer()
         {
             Transaction tr = new Transaction();
             return PartialView("_Transfer", tr);
         }
         [HttpPost]
-        public ActionResult Transfer(Transaction tr)
+        public IActionResult Transfer(Transaction tr)
         {
             return PartialView("_Transfer", tr);
         }
-        public ActionResult New_Account()
+        public IActionResult New_Account()
         {
             ViewBag.States = GetStates();
             ViewBag.Countries = GetCountries();
@@ -56,7 +56,7 @@ namespace Banking_Platform_2._0.Controllers
             return PartialView("_NewAccount", tr);
         }
         [HttpPost]
-        public ActionResult New_Account(NewAccountDTO ac)
+        public IActionResult New_Account(NewAccountDTO ac)
         {
             if (InsertIntoUser(ac) > 0)
             {
@@ -124,15 +124,15 @@ namespace Banking_Platform_2._0.Controllers
         }
         private long CreatAccNo()
         {
-            // Generate a random 10-digit account number
+            // Generate Account Number
             var ac = db.AccountMsts.OrderByDescending(a => a.AccountNo).FirstOrDefault();
             if (ac != null)
             {
-                return Convert.ToInt64(ac) + 1;
+                return Convert.ToInt64(ac.AccountNo) + 1;
             }
             else
             {
-                return 105434002001650;
+                return 1000000000001000;
             }
         }
         private string CreateDefaultUserPass(string name, DateTime dateOfBirth)
@@ -154,23 +154,23 @@ namespace Banking_Platform_2._0.Controllers
             return Json(new { ifsc = ifscCode, branchId });
         }
 
-        public ActionResult Modify()
+        public IActionResult Modify()
         {
             Transaction tr = new Transaction();
             return PartialView("_Modify_Account", tr);
         }
         [HttpPost]
-        public ActionResult Modify(Transaction tr)
+        public IActionResult Modify(Transaction tr)
         {
             return PartialView("_Modify_Account", tr);
         }
-        public ActionResult Balance_Inquary()
+        public IActionResult Balance_Inquary()
         {
             Transaction tr = new Transaction();
             return PartialView("_Balance_Inquary", tr);
         }
         [HttpPost]
-        public ActionResult Balance_Inquary(Transaction tr)
+        public IActionResult Balance_Inquary(Transaction tr)
         {
             return PartialView("_Balance_Inquary", tr);
         }

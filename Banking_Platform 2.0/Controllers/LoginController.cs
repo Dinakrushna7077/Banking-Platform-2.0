@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace Banking_Platform_2._0.Controllers
 {
@@ -54,7 +55,12 @@ namespace Banking_Platform_2._0.Controllers
                         HttpContext.Session.SetInt32("UserID", user.UserId);
                         HttpContext.Session.SetString("Username", user.Username);
                         HttpContext.Session.SetInt32("Role", user.RoleId);
-                        return RedirectToAction("Dashboard", "Admin");
+                        return user.RoleId switch
+                        {
+                            1 => RedirectToAction("Dashboard", "Admin"),
+                            2 => RedirectToAction("Dashboard", "Admin"),
+                            3 => RedirectToAction("Dashboard", "User")
+                        };
                     }
                     else
                     {

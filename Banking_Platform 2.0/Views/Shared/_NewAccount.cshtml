@@ -1,0 +1,251 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.NewAccountDTO
+<style>
+    .card {
+        border: none;
+    }
+
+    .form-control {
+        border-bottom: 2px solid #eee !important;
+        border: none;
+        font-weight: 600
+    }
+
+        .form-control:focus {
+            color: #495057;
+            background-color: #fff;
+            border-color: #8bbafe;
+            outline: 0;
+            box-shadow: none;
+            border-radius: 0px;
+            border-bottom: 2px solid blue !important;
+        }
+
+    .inputbox {
+        position: relative;
+        margin-bottom: 20px;
+        width: 100%
+    }
+
+        .inputbox span {
+            position: absolute;
+            top: 7px;
+            left: 11px;
+            transition: 0.5s
+        }
+
+        .inputbox i {
+            position: absolute;
+            top: 13px;
+            right: 8px;
+            transition: 0.5s;
+            color: #3F51B5
+        }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0
+    }
+
+    .inputbox input:focus ~ span {
+        transform: translateX(-0px) translateY(-15px);
+        font-size: 12px
+    }
+
+    .inputbox input:valid ~ span {
+        transform: translateX(-0px) translateY(-15px);
+        font-size: 12px
+    }
+
+    .card-blue {
+        background-color: #492bc4;
+    }
+
+    .hightlight {
+        background-color: #5737d9;
+        padding: 10px;
+        border-radius: 10px;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .yellow {
+        color: #fdcc49;
+    }
+
+    .decoration {
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .decoration:hover {
+            text-decoration: none;
+            color: #fdcc49;
+        }
+
+    .point {
+        cursor: pointer;
+    }
+</style>
+<div class="container mt-5 px-5">
+    <div class="mb-2">
+        <h2 class="text-center"><span class="border-bottom">New Account</span></h2>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            @* @using (Ajax.BeginForm("New_Account", "Admin", new AjaxOptions
+            {
+                HttpMethod = "POST",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "tgt", // Target div for the response
+                OnSuccess = "onSuccess",
+                OnFailure = "onFailure"
+            })) *@
+            {
+                @Html.AntiForgeryToken()
+                <div class="card p-3">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                @Html.DropDownListFor(m => m.BranchCode, ViewBag.Branch as List<SelectListItem>, "--- Branch ---", new { @class = "form-control", @id = "branchSelect" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row">
+                                <div class="inputbox mt-3 mr-2">
+                                    @Html.TextBoxFor(m => m.IFSCCode, new { @class = "form-control mt-2", placeholder = "IFSC Code", @readonly = "readonly", @id = "ifscCode" })
+                                    @*<input type="text" placeholder="IFSC" name="name" id="ifscCode" class="form-control" required="required" readonly>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                <input type="text" placeholder="Name" name="name" class="form-control" required="required">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row">
+                                <div class="inputbox mt-3 mr-2 d-flex gap-5">
+                                    <div>@Html.RadioButtonFor(x => x.Gender, "Male", new { @id = "male", @class = "point" }) <label class="point" for="male">Male</label></div>
+                                    <div>@Html.RadioButtonFor(x => x.Gender, "Female", new { @id = "female", @class = "point" }) <label for="female" class="point">Female</label></div>
+                                    <div>@Html.RadioButtonFor(x => x.Gender, "Other", new { @id = "other", @class = "point" }) <label for="other" class="point">Other</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                <input type="text" name="name" class="form-control" required="required" placeholder="Father Name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row">
+                                <div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required" placeholder="Mother Name"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                <input type="text" name="name" class="form-control" required="required" placeholder="Mobile">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row">
+                                <div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required" placeholder="Adhar Number"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                <input type="text" placeholder="Pan Card Number" name="name" class="form-control" required="required">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row">
+                                <div class="inputbox mt-3 mr-2"> <input type="text" placeholder="Email Address" name="name" class="form-control" required="required">  </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                <input type="text" placeholder="Address" name="name" class="form-control" required="required">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row">
+
+                                <div class="inputbox mt-3 mr-2">
+                                    @Html.DropDownListFor(m => m.State, ViewBag.States as List<SelectListItem>, "--- State ---", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                @Html.DropDownListFor(m => m.Country, ViewBag.Countries as List<SelectListItem>, "--- Country ---", new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-row mt-3 mr-2 gap-4">
+                                <div>
+                                    @Html.RadioButtonFor(x => x.AccountType, "Saving", new { @id = "saving", @class = "point" }) <label class="point" for="saving">Saving</label>
+                                </div>
+                                <div>
+                                    @Html.RadioButtonFor(x => x.AccountType, "Current", new { @id = "current", @class = "point" }) <label class="point" for="current">Current</label>
+                                </div>
+                                <div>
+                                    @Html.RadioButtonFor(x => x.AccountType, "Fixed", new { @id = "fixed", @class = "point" }) <label class="point" for="fixed">Fixed</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="inputbox mt-3 mr-2">
+                                <input type="text" name="name" class="form-control" required="required" placeholder="Deposit Amount">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 mb-4">
+                        <div class="mt-2 mb-1 d-flex justify-content-center">
+                            <button class="btn btn-success px-3 w-100 fw-bolder">Next</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+
+<script>
+    $(document).ready(function () {
+        $('#branchSelect').on('change', function () {
+            var selectedBranchId = $(this).val();
+
+            if (selectedBranchId) {
+                $.ajax({
+                    url: '@Url.Action("GetIfscByBranchId", "Admin")',
+                    type: 'GET',
+                    data: { branchId: selectedBranchId },
+                    success: function (response) {
+                        $('#ifscCode').val(response.ifsc);
+                    },
+                    error: function () {
+                        alert('Error retrieving IFSC code');
+                    }
+                });
+            } else {
+                $('#ifscCode').val('');
+            }
+        });
+    });
+</script>
