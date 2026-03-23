@@ -1,0 +1,712 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.ModifyAccountDto
+
+<style>
+    .form-control {
+        border-bottom: 2px solid #eee !important;
+        border: none;
+        font-weight: 600;
+    }
+
+        .form-control:focus {
+            color: #495057;
+            background-color: #fff;
+            outline: 0;
+            box-shadow: none;
+            border-radius: 0;
+            border-bottom: 2px solid blue !important;
+        }
+
+    .inputbox {
+        position: relative;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+        .inputbox i {
+            position: absolute;
+            top: 13px;
+            right: 8px;
+            color: #3F51B5;
+        }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .point {
+        cursor: pointer;
+    }
+
+    /* ── Section Label ──────────────────────────────────── */
+    .section-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+    }
+
+    /* ── Radio Pills ────────────────────────────────────── */
+    .radio-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-group label {
+            padding: 6px 18px;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .radio-group input[type="radio"]:checked + label {
+            border-color: #492bc4;
+            background: #f0ecff;
+            color: #492bc4;
+        }
+
+    /* ── Account Preview Card ───────────────────────────── */
+    .preview-card {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        border-radius: 18px;
+        padding: 22px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .preview-card::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            right: -40px;
+            width: 130px;
+            height: 130px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .preview-card .chip {
+            width: 36px;
+            height: 26px;
+            background: linear-gradient(135deg, #fdcc49, #f9a825);
+            border-radius: 5px;
+            margin-bottom: 14px;
+        }
+
+        .preview-card .p-label {
+            font-size: 10px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .preview-card .p-value {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .preview-card .p-accno {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            opacity: 0.85;
+            margin-bottom: 14px;
+        }
+
+    /* ── Summary Box ────────────────────────────────────── */
+    .summary-box {
+        background: #f8f6ff;
+        border-radius: 14px;
+        padding: 18px 20px;
+        border: 1px dashed #c5b8f5;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 6px 0;
+        border-bottom: 1px solid #ede9ff;
+    }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row .s-label {
+            color: #888;
+        }
+
+        .summary-row .s-value {
+            font-weight: 700;
+            color: #333;
+        }
+
+    /* ── Search Bar ─────────────────────────────────────── */
+    .search-bar {
+        background: #f8f6ff;
+        border: 1px dashed #c5b8f5;
+        border-radius: 14px;
+        padding: 18px 20px;
+    }
+
+    /* ── Btn ────────────────────────────────────────────── */
+    .btn-update {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        color: #fff;
+        border: none;
+        font-weight: 700;
+        transition: all 0.3s;
+    }
+
+        .btn-update:hover {
+            background: linear-gradient(135deg, #3a1fa8, #6843d0);
+            color: #fff;
+        }
+
+        .btn-update:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    .alert-info-custom {
+        background: #f0ecff;
+        border-left: 4px solid #492bc4;
+        color: #492bc4;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    /* ── Form Locked State ──────────────────────────────── */
+    .form-locked {
+        opacity: 0.45;
+        pointer-events: none;
+        transition: opacity 0.4s;
+    }
+
+        .form-locked.unlocked {
+            opacity: 1;
+            pointer-events: all;
+        }
+</style>
+
+<div class="container mt-5 px-4">
+    <div class="mb-4">
+        <h2 class="text-center"><span class="border-bottom">Update Account</span></h2>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="row g-4">
+
+            
+                <div class="col-md-7">
+
+                    <div class="search-bar mb-4">
+                        <p class="section-label mb-2">Search Account</p>
+                        <div class="d-flex gap-2">
+                            <div class="position-relative flex-grow-1">
+                                <input type="text" class="form-control"
+                                       placeholder="Enter Account Number"
+                                       id="searchAccNo" autocomplete="off" />
+                                <i class="bi bi-credit-card position-absolute top-50 end-0
+                                          translate-middle-y text-primary me-1"
+                                   style="position:absolute !important;"></i>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-update rounded-3 px-4 fw-bold"
+                                    id="searchBtn">
+                                <i class="bi bi-search me-1"></i> Find
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateForm"
+                          asp-controller="Admin" asp-action="Modify" method="post">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="AccountNumber" type="hidden" id="accountNumberHidden" />
+
+                        <div class="card border-0 shadow-sm rounded-4 p-4 form-locked"
+                             id="editFormCard">
+
+                            <p class="section-label">
+                                <span class="badge rounded-pill me-1 text-white"
+                                      style="background:#492bc4; font-size:9px;">1</span>
+                                Personal Information
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox mt-2">
+                                        <div class="position-relative">
+                                            <input asp-for="Name" class="form-control"
+                                                   placeholder="Full Name" required />
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                        <span asp-validation-for="Name" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mt-2 mb-3">
+                                        <p class="section-label mb-2">Gender</p>
+                                        <div class="radio-group">
+                                            <input asp-for="Gender" type="radio" value="Male" id="male" />
+                                            <label for="male">Male</label>
+                                            <input asp-for="Gender" type="radio" value="Female" id="female" />
+                                            <label for="female">Female</label>
+                                            <input asp-for="Gender" type="radio" value="Other" id="other" />
+                                            <label for="other">Other</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="FatherName" class="form-control"
+                                                   placeholder="Father Name" required />
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <span asp-validation-for="FatherName" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="MotherName" class="form-control"
+                                                   placeholder="Mother Name" required />
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <span asp-validation-for="MotherName" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                             
+
+                            <p class="section-label">
+                                <span class="badge rounded-pill me-1 text-white"
+                                      style="background:#492bc4; font-size:9px;">2</span>
+                                Contact Information
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox mt-2">
+                                        <div class="position-relative">
+                                            <input asp-for="MobileNumber" class="form-control"
+                                                   placeholder="Mobile Number" required />
+                                            <i class="bi bi-phone"></i>
+                                        </div>
+                                        <span asp-validation-for="MobileNumber" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="inputbox mt-2">
+                                        <div class="position-relative">
+                                            <input asp-for="Email" type="email" class="form-control"
+                                                   placeholder="Email Address" required />
+                                            <i class="bi bi-envelope"></i>
+                                        </div>
+                                        <span asp-validation-for="Email" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                             
+                            <p class="section-label">
+                                <span class="badge rounded-pill me-1 text-white"
+                                      style="background:#492bc4; font-size:9px;">3</span>
+                                Address
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox mt-2">
+                                        <div class="position-relative">
+                                            <select asp-for="State"
+                                                    asp-items="@(ViewBag.States as List<SelectListItem>)"
+                                                    class="form-control">
+                                                <option value="">--- State ---</option>
+                                            </select>
+                                            <i class="bi bi-map"></i>
+                                        </div>
+                                        <span asp-validation-for="State" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="inputbox mt-2">
+                                        <div class="position-relative">
+                                            <select asp-for="Country"
+                                                    asp-items="@(ViewBag.Countries as List<SelectListItem>)"
+                                                    class="form-control">
+                                                <option value="">--- Country ---</option>
+                                            </select>
+                                            <i class="bi bi-globe"></i>
+                                        </div>
+                                        <span asp-validation-for="Country" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                             
+
+                            <p class="section-label">
+                                <span class="badge rounded-pill me-1 text-white"
+                                      style="background:#492bc4; font-size:9px;">4</span>
+                                Branch &amp; Account Type
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox mt-2">
+                                        <div class="position-relative">
+                                            <select asp-for="BranchCode"
+                                                    asp-items="@(ViewBag.Branch as List<SelectListItem>)"
+                                                    class="form-control" id="branchSelect">
+                                                <option value="">--- Branch ---</option>
+                                            </select>
+                                            <i class="bi bi-bank"></i>
+                                        </div>
+                                        <span asp-validation-for="BranchCode" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="inputbox mt-2">
+                                        <div class="position-relative">
+                                            <input asp-for="IFSCCode" class="form-control"
+                                                   placeholder="IFSC Code (auto-filled)"
+                                                   readonly id="ifscCode" />
+                                            <i class="bi bi-upc"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <p class="section-label mb-2">Account Type</p>
+                                <div class="radio-group">
+                                    <input asp-for="AccountType" type="radio" value="Saving" id="saving" />
+                                    <label for="saving">Saving</label>
+                                    <input asp-for="AccountType" type="radio" value="Current" id="current" />
+                                    <label for="current">Current</label>
+                                    <input asp-for="AccountType" type="radio" value="Fixed" id="fixed" />
+                                    <label for="fixed">Fixed</label>
+                                </div>
+                                <span asp-validation-for="AccountType" class="text-danger small d-block mt-1"></span>
+                            </div>
+
+                            <div class="d-flex gap-2 mt-4">
+                                <button type="button"
+                                        class="btn btn-outline-secondary fw-bold rounded-3"
+                                        style="width:20%;"
+                                        id="resetBtn">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                                <button type="submit"
+                                        class="btn btn-update rounded-3 fw-bold"
+                                        style="width:80%;">
+                                    <i class="bi bi-pencil-square me-2"></i> Update Account
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-5 d-flex flex-column gap-3">
+
+                    <div class="preview-card">
+                        <div class="chip"></div>
+                        <div class="p-accno" id="previewAccNo">•••• •••• ••••</div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <p class="p-label mb-0">Account Holder</p>
+                                <p class="p-value mb-0" id="previewName">— —</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="p-label mb-0">Account Type</p>
+                                <p class="p-value mb-0" id="previewType">—</p>
+                            </div>
+                        </div>
+                        <hr style="border-color:rgba(255,255,255,0.2); margin:14px 0 10px;">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="p-label mb-0">Branch</p>
+                                <p class="p-value mb-0" id="previewBranch">—</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="p-label mb-0">Status</p>
+                                <p class="p-value mb-0" id="previewStatus">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="summary-box">
+                        <p class="section-label mb-3">Update Summary</p>
+                        <div class="summary-row">
+                            <span class="s-label">Account No.</span>
+                            <span class="s-value" id="sumAccNo">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">Full Name</span>
+                            <span class="s-value" id="sumName">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">Gender</span>
+                            <span class="s-value" id="sumGender">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">Mobile</span>
+                            <span class="s-value" id="sumMobile">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">Email</span>
+                            <span class="s-value" id="sumEmail" style="font-size:12px;">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">State</span>
+                            <span class="s-value" id="sumState">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">Country</span>
+                            <span class="s-value" id="sumCountry">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">Branch</span>
+                            <span class="s-value" id="sumBranch">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="s-label">Account Type</span>
+                            <span class="s-value" id="sumType">—</span>
+                        </div>
+                    </div>
+
+                    <div class="alert-info-custom p-3">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Note:</strong> Search account number first to load existing data.
+                        Only the fields above can be updated. Identity fields are locked.
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+
+            var originalData = {};
+
+            // ── Search Account ────────────────────────────────────────────────
+            $('#searchBtn').on('click', function () {
+                var accNo = $('#searchAccNo').val().trim();
+                if (!accNo) { alert('Please enter an account number.'); return; }
+
+                var btn = $(this);
+                btn.prop('disabled', true)
+                   .html('<span class="spinner-border spinner-border-sm me-1"></span> Finding...');
+
+                $.ajax({
+                    url: '@Url.Action("GetAccountDetails", "Admin")',
+                    type: 'GET',
+                    data: { accountNumber: accNo },
+                    success: function (res) {
+                        btn.prop('disabled', false)
+                           .html('<i class="bi bi-search me-1"></i> Find');
+
+                        if (res && res.success) {
+                            populateForm(res, accNo);
+                            $('#editFormCard').addClass('unlocked');
+                        } else {
+                            alert(res.message || 'Account not found.');
+                            resetForm();
+                        }
+                    },
+                    error: function () {
+                        btn.prop('disabled', false)
+                           .html('<i class="bi bi-search me-1"></i> Find');
+                        alert('Error fetching account. Please try again.');
+                    }
+                });
+            });
+
+            // Allow Enter on search input
+            $('#searchAccNo').on('keypress', function (e) {
+                if (e.which === 13) $('#searchBtn').trigger('click');
+            });
+
+            // ── Populate Form with fetched data ───────────────────────────────
+            function populateForm(res, accNo) {
+                // Hidden field
+                $('#accountNumberHidden').val(accNo);
+
+                // Personal
+                $('input[name="Name"]').val(res.holderName);
+                $('input[name="Gender"][value="' + res.gender + '"]').prop('checked', true);
+                $('input[name="FatherName"]').val(res.fatherName);
+                $('input[name="MotherName"]').val(res.motherName);
+
+                // Contact
+                $('input[name="MobileNumber"]').val(res.mobile);
+                $('input[name="Email"]').val(res.email);
+
+                // Address
+                $('select[name="State"]').val(res.state);
+                $('select[name="Country"]').val(res.country);
+
+                // Branch & Account Type
+                $('select[name="BranchCode"]').val(res.branchCode);
+                $('#ifscCode').val(res.ifscCode);
+                $('input[name="AccountType"][value="' + res.accountType + '"]').prop('checked', true);
+
+                // Store original for reset
+                originalData = res;
+                originalData.accNo = accNo;
+
+                // Update preview + summary
+                updatePreview(accNo, res);
+                updateSummary();
+            }
+
+            // ── Live Summary Update ───────────────────────────────────────────
+            function updateSummary() {
+                var accNo   = $('#accountNumberHidden').val()           || '—';
+                var name    = $('input[name="Name"]').val()             || '—';
+                var gender  = $('input[name="Gender"]:checked').val()   || '—';
+                var mobile  = $('input[name="MobileNumber"]').val()     || '—';
+                var email   = $('input[name="Email"]').val()            || '—';
+                var state   = $('select[name="State"] option:selected').text();
+                var country = $('select[name="Country"] option:selected').text();
+                var branch  = $('select[name="BranchCode"] option:selected').text();
+                var type    = $('input[name="AccountType"]:checked').val() || '—';
+
+                if (state   === '--- State ---')   state   = '—';
+                if (country === '--- Country ---') country = '—';
+                if (branch  === '--- Branch ---')  branch  = '—';
+
+                $('#sumAccNo').text(accNo);
+                $('#sumName').text(name);
+                $('#sumGender').text(gender);
+                $('#sumMobile').text(mobile);
+                $('#sumEmail').text(email);
+                $('#sumState').text(state);
+                $('#sumCountry').text(country);
+                $('#sumBranch').text(branch);
+                $('#sumType').text(type);
+
+                // Preview card
+                $('#previewName').text(name !== '—' ? name : '— —');
+                $('#previewType').text(type);
+                $('#previewBranch').text(branch !== '—' ? branch : '—');
+            }
+
+            function updatePreview(accNo, res) {
+                $('#previewAccNo').text(formatAccNo(accNo));
+                $('#previewStatus').html(
+                    res.isActive
+                        ? '<span style="color:#a5f3b0;">● Active</span>'
+                        : '<span style="color:#fca5a5;">● Inactive</span>'
+                );
+            }
+
+            // ── Auto-fill IFSC on branch change ──────────────────────────────
+            $('#branchSelect').on('change', function () {
+                var branchId = $(this).val();
+                if (branchId) {
+                    $.ajax({
+                        url: '@Url.Action("GetIfscByBranchId", "Admin")',
+                        type: 'GET',
+                        data: { branchId: branchId },
+                        success: function (res) {
+                            $('#ifscCode').val(res.ifsc);
+                            updateSummary();
+                        },
+                        error: function () { alert('Error retrieving IFSC code.'); }
+                    });
+                } else {
+                    $('#ifscCode').val('');
+                }
+            });
+
+            // ── Reset to original values ──────────────────────────────────────
+            $('#resetBtn').on('click', function () {
+                if (originalData && originalData.accNo) {
+                    populateForm(originalData, originalData.accNo);
+                }
+            });
+
+            // ── Bind all inputs for live summary ─────────────────────────────
+            $(document).on('input change', '#editFormCard input, #editFormCard select',
+                updateSummary);
+
+            // ── AJAX Form Submit ──────────────────────────────────────────────
+            $('#updateForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var btn = $(this).find('button[type="submit"]');
+                btn.prop('disabled', true)
+                   .html('<span class="spinner-border spinner-border-sm me-2"></span> Updating...');
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        $('#tgt').html(response);
+                    },
+                    error: function () {
+                        btn.prop('disabled', false)
+                           .html('<i class="bi bi-pencil-square me-2"></i> Update Account');
+                        alert('Update failed. Please try again.');
+                    }
+                });
+            });
+
+            // ── Helpers ──────────────────────────────────────────────────────
+            function resetForm() {
+                $('#editFormCard').removeClass('unlocked');
+                $('#accountNumberHidden').val('');
+                $('#editFormCard input[type!="hidden"]').val('');
+                $('#editFormCard select').prop('selectedIndex', 0);
+                $('#editFormCard input[type="radio"]').prop('checked', false);
+                $('#ifscCode').val('');
+                originalData = {};
+
+                // Reset preview + summary
+                $('#previewAccNo').text('•••• •••• ••••');
+                $('#previewName').text('— —');
+                $('#previewType').text('—');
+                $('#previewBranch').text('—');
+                $('#previewStatus').text('—');
+                ['sumAccNo','sumName','sumGender','sumMobile',
+                 'sumEmail','sumState','sumCountry','sumBranch','sumType']
+                    .forEach(function(id) { $('#' + id).text('—'); });
+            }
+
+            function formatAccNo(v) {
+                return v.replace(/(.{4})/g, '$1 ').trim();
+            }
+
+        });
+    </script>
+}

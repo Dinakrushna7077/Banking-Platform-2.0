@@ -12,7 +12,6 @@ namespace Banking_Platform_2._0.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
             return View();

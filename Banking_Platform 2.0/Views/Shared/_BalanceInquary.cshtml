@@ -1,0 +1,555 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.CheckBalanceDTO
+
+<style>
+    .form-control {
+        border-bottom: 2px solid #eee !important;
+        border: none;
+        font-weight: 600;
+    }
+
+        .form-control:focus {
+            color: #495057;
+            background-color: #fff;
+            outline: 0;
+            box-shadow: none;
+            border-radius: 0px;
+            border-bottom: 2px solid blue !important;
+        }
+
+    .inputbox {
+        position: relative;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+        .inputbox i {
+            position: absolute;
+            top: 13px;
+            right: 8px;
+            color: #3F51B5;
+        }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .section-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+    }
+
+    /* Gradient Account Card */
+    .account-card {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        border-radius: 20px;
+        color: white;
+        padding: 28px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(73,43,196,0.25);
+    }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 160px;
+            height: 160px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 50%;
+        }
+
+        .account-card::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -30px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .account-card .chip {
+            width: 42px;
+            height: 32px;
+            background: linear-gradient(135deg, #fdcc49, #f9a825);
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .account-card .label {
+            font-size: 11px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .account-card .value {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .account-card .balance-label {
+            font-size: 12px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .account-card .balance-amount {
+            font-size: 34px;
+            font-weight: 800;
+            color: #fdcc49;
+            letter-spacing: 0.02em;
+        }
+
+        .account-card .acc-number {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            opacity: 0.9;
+        }
+
+    /* Stats Boxes */
+    .stat-box {
+        border-radius: 14px;
+        padding: 18px 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .stat-box .stat-icon {
+            font-size: 2rem;
+            opacity: 0.15;
+            position: absolute;
+            right: 14px;
+            bottom: 10px;
+        }
+
+        .stat-box .stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            opacity: 0.75;
+        }
+
+        .stat-box .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+    .stat-green {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .stat-red {
+        background-color: #fce4ec;
+        color: #c62828;
+    }
+
+    .stat-blue {
+        background-color: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .stat-yellow {
+        background-color: #fff8e1;
+        color: #f57f17;
+    }
+
+    /* Transaction Table */
+    .tx-table th {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #888;
+        font-weight: 700;
+        border: none;
+    }
+
+    .tx-table td {
+        font-size: 13px;
+        vertical-align: middle;
+        border-color: #f0f0f0;
+    }
+
+    .tx-table tbody tr:hover {
+        background-color: #f8f6ff;
+    }
+
+    .badge-credit {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    .badge-debit {
+        background-color: #fce4ec;
+        color: #c62828;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    .btn-inquiry {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        color: white;
+        border: none;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+        .btn-inquiry:hover {
+            background: linear-gradient(135deg, #3a1fa8, #6843d0);
+            color: white;
+        }
+
+    .alert-info-custom {
+        background-color: #f0ecff;
+        border-left: 4px solid #492bc4;
+        color: #492bc4;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    /* Mini chart bar */
+    .mini-bar {
+        height: 6px;
+        border-radius: 3px;
+        background: #e0e0e0;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+
+    .mini-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #492bc4, #7b54e8);
+        transition: width 0.8s ease;
+    }
+
+    .point {
+        cursor: pointer;
+    }
+</style>
+
+<div class="container mt-5 px-4">
+    <div class="mb-4">
+        <h2 class="text-center"><span class="border-bottom">Balance Inquiry</span></h2>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+
+            <!-- Search Bar -->
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <p class="section-label">Account Number</p>
+                        <div class="inputbox mb-0">
+                            <div class="position-relative">
+                                <input type="text" id="searchAccNo" class="form-control"
+                                       placeholder="Enter Account Number" autocomplete="off" />
+                                <i class="bi bi-credit-card"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="section-label">Mobile / Aadhar (Optional)</p>
+                        <div class="inputbox mb-0">
+                            <div class="position-relative">
+                                <input type="text" id="searchSecondary" class="form-control"
+                                       placeholder="For additional verification" autocomplete="off" />
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-inquiry w-100 py-2" id="inquiryBtn">
+                            <i class="bi bi-search me-1"></i> Check Balance
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section (hidden until verified) -->
+            <div id="resultsSection" class="d-none">
+
+                <div class="row g-4">
+
+                    <!-- Left Column -->
+                    <div class="col-md-5 d-flex flex-column gap-4">
+
+                        <!-- Account Card -->
+                        <div class="account-card">
+                            <div class="chip"></div>
+                            <div class="acc-number mb-3" id="cardAccNo">•••• •••• ••••</div>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <p class="label mb-0">Account Holder</p>
+                                    <p class="value mb-0" id="cardName">— —</p>
+                                </div>
+                                <div class="text-end">
+                                    <p class="label mb-0">Account Type</p>
+                                    <p class="value mb-0" id="cardType">—</p>
+                                </div>
+                            </div>
+                            <hr style="border-color:rgba(255,255,255,0.2); margin: 18px 0 14px;">
+                            <p class="balance-label mb-0">Available Balance</p>
+                            <p class="balance-amount mb-0" id="cardBalance">₹ —</p>
+                        </div>
+
+                        <!-- Account Details -->
+                        <div class="card border-0 shadow-sm p-4">
+                            <p class="section-label mb-3">Account Details</p>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted small">Branch</span>
+                                <span class="fw-bold small" id="detailBranch">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted small">IFSC Code</span>
+                                <span class="fw-bold small" id="detailIFSC">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted small">Account Status</span>
+                                <span id="detailStatus">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted small">Opening Date</span>
+                                <span class="fw-bold small" id="detailOpenDate">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2">
+                                <span class="text-muted small">Mobile</span>
+                                <span class="fw-bold small" id="detailMobile">—</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-7 d-flex flex-column gap-4">
+
+                        <!-- Stats Row -->
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="stat-box stat-green">
+                                    <p class="stat-label mb-1">Total Credits</p>
+                                    <p class="stat-value mb-0" id="statCredit">₹ —</p>
+                                    <i class="bi bi-arrow-down-circle stat-icon"></i>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-box stat-red">
+                                    <p class="stat-label mb-1">Total Debits</p>
+                                    <p class="stat-value mb-0" id="statDebit">₹ —</p>
+                                    <i class="bi bi-arrow-up-circle stat-icon"></i>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-box stat-blue">
+                                    <p class="stat-label mb-1">Total Transactions</p>
+                                    <p class="stat-value mb-0" id="statTxCount">—</p>
+                                    <i class="bi bi-receipt stat-icon"></i>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-box stat-yellow">
+                                    <p class="stat-label mb-1">Last Transaction</p>
+                                    <p class="stat-value mb-0" style="font-size:15px;" id="statLastTx">—</p>
+                                    <i class="bi bi-clock-history stat-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Credit vs Debit Bar -->
+                        <div class="card border-0 shadow-sm p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <p class="section-label mb-0">Credit vs Debit Ratio</p>
+                                <small class="text-muted" id="ratioText">—</small>
+                            </div>
+                            <div class="mini-bar">
+                                <div class="mini-bar-fill" id="ratioBar" style="width: 0%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-success fw-bold">Credit</small>
+                                <small class="text-danger fw-bold">Debit</small>
+                            </div>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="card border-0 shadow-sm p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <p class="section-label mb-0">Recent Transactions</p>
+                                <small class="text-muted">Last 5</small>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table tx-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Type</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="txTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-3">
+                                                No data yet
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Placeholder (shown before search) -->
+            <div id="placeholderSection" class="text-center py-5">
+                <i class="bi bi-bank2" style="font-size:4rem; color:#c5b8f5;"></i>
+                <p class="mt-3 text-muted">Enter an account number above and click <strong>Check Balance</strong> to view account details.</p>
+                <div class="alert-info-custom p-3 mt-3 text-start d-inline-block">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <strong>Tip:</strong> You can also enter a mobile number or Aadhar for extra verification.
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+
+            $('#inquiryBtn').on('click', function () {
+                var accNo = $('#searchAccNo').val().trim();
+
+                if (!accNo) {
+                    alert('Please enter an account number.');
+                    return;
+                }
+
+                var btn = $(this);
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Checking...');
+
+                $.ajax({
+                    url: '@Url.Action("GetBalanceInquiry", "Admin")',
+                    type: 'GET',
+                    data: {
+                        accountNumber: accNo,
+                        secondary: $('#searchSecondary').val().trim()
+                    },
+                    success: function (res) {
+                        btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Check Balance');
+
+                        if (res && res.success) {
+                            populateDashboard(res);
+                            $('#placeholderSection').addClass('d-none');
+                            $('#resultsSection').removeClass('d-none');
+                        } else {
+                            alert(res.message || 'Account not found.');
+                        }
+                    },
+                    error: function () {
+                        btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Check Balance');
+                        alert('Error fetching account details. Please try again.');
+                    }
+                });
+            });
+
+            // Allow pressing Enter in input
+            $('#searchAccNo, #searchSecondary').on('keypress', function (e) {
+                if (e.which === 13) $('#inquiryBtn').trigger('click');
+            });
+
+            function populateDashboard(res) {
+                // Account Card
+                $('#cardAccNo').text(formatAccNo(res.accountNumber));
+                $('#cardName').text(res.holderName);
+                $('#cardType').text(res.accountType);
+                $('#cardBalance').text('₹ ' + formatAmount(res.balance));
+
+                // Account Details
+                $('#detailBranch').text(res.branchName || '—');
+                $('#detailIFSC').text(res.ifscCode || '—');
+                $('#detailOpenDate').text(res.openingDate || '—');
+                $('#detailMobile').text(res.mobile || '—');
+
+                // Status Badge
+                var isActive = res.status === 'Active';
+                $('#detailStatus').html(
+                    '<span class="badge ' + (isActive ? 'badge-credit' : 'badge-debit') + '">' +
+                    (res.status || '—') + '</span>'
+                );
+
+                // Stats
+                $('#statCredit').text('₹ ' + formatAmount(res.totalCredits || 0));
+                $('#statDebit').text('₹ ' + formatAmount(res.totalDebits || 0));
+                $('#statTxCount').text(res.totalTransactions || 0);
+                $('#statLastTx').text(res.lastTransactionDate || '—');
+
+                // Ratio bar
+                var total = (res.totalCredits || 0) + (res.totalDebits || 0);
+                var creditPct = total > 0 ? ((res.totalCredits / total) * 100).toFixed(1) : 0;
+                $('#ratioBar').css('width', creditPct + '%');
+                $('#ratioText').text(creditPct + '% credit');
+
+                // Transactions Table
+                var tbody = $('#txTableBody');
+                tbody.empty();
+
+                if (res.recentTransactions && res.recentTransactions.length > 0) {
+                    res.recentTransactions.forEach(function (tx) {
+                        var isCredit = tx.type === 'Credit';
+                        tbody.append(
+                            '<tr>' +
+                            '<td>' + tx.date + '</td>' +
+                            '<td>' + tx.description + '</td>' +
+                            '<td><span class="' + (isCredit ? 'badge-credit' : 'badge-debit') + '">' + tx.type + '</span></td>' +
+                            '<td class="text-end fw-bold ' + (isCredit ? 'text-success' : 'text-danger') + '">' +
+                            (isCredit ? '+' : '-') + '₹ ' + formatAmount(tx.amount) +
+                            '</td>' +
+                            '</tr>'
+                        );
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="4" class="text-center text-muted py-3">No recent transactions</td></tr>');
+                }
+            }
+
+            function formatAccNo(accNo) {
+                // Format as groups of 4: 1234 5678 9012
+                return accNo.replace(/(.{4})/g, '$1 ').trim();
+            }
+
+            function formatAmount(amount) {
+                return parseFloat(amount).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+        });
+    </script>
+}

@@ -1,0 +1,163 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.CreatedAccountDto
+
+<style>
+    .account-card {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        border-radius: 20px;
+        padding: 32px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .account-card::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -30px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+
+    .chip {
+        width: 42px;
+        height: 30px;
+        background: linear-gradient(135deg, #fdcc49, #f9a825);
+        border-radius: 6px;
+        margin-bottom: 22px;
+    }
+
+    .acc-label {
+        font-size: 10px;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 4px;
+    }
+
+    .acc-number {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        color: #fdcc49;
+        margin-bottom: 22px;
+    }
+
+    .acc-value {
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .acc-balance {
+        font-size: 28px;
+        font-weight: 900;
+        color: #fdcc49;
+    }
+
+    .btn-copy {
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 14px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-copy:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+    .success-badge {
+        background: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        border-radius: 50px;
+        padding: 6px 18px;
+        color: #2e7d32;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+</style>
+
+<div class="container mt-5 px-4">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            <div class="text-center mb-4">
+                <div class="success-badge mb-3">
+                    <i class="bi bi-check-circle-fill"></i> Account Created Successfully
+                </div>
+                <h4 class="fw-bold mt-2">Welcome to Urban Bank!</h4>
+                <p class="text-muted" style="font-size:14px;">
+                    Your account details are below. Please save your account number.
+                </p>
+            </div>
+
+            <div class="account-card mb-4">
+                <div class="chip"></div>
+
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <p class="acc-label mb-0">Account Number</p>
+                    <button class="btn-copy" id="copyBtn">
+                        <i class="bi bi-copy me-1"></i> Copy
+                    </button>
+                </div>
+                <div class="acc-number">@Model.AccountNumber</div>
+
+                <hr style="border-color:rgba(255,255,255,0.2); margin:16px 0 16px;">
+
+                <div class="d-flex justify-content-between align-items-end">
+                    <div>
+                        <p class="acc-label mb-1">Account Holder</p>
+                        <p class="acc-value mb-0">@Model.HolderName</p>
+                    </div>
+                    <div class="text-end">
+                        <p class="acc-label mb-1">Balance</p>
+                        <p class="acc-balance mb-0">₹ @Model.Balance.ToString("N2")</p>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="Admin" asp-action="New_Account"
+                   class="btn btn-primary fw-bold rounded-pill w-50">
+                    <i class="bi bi-person-plus me-1"></i> New Account
+                </a>
+                <a asp-controller="Admin" asp-action="Dashboard"
+                   class="btn btn-outline-secondary fw-bold rounded-pill w-50">
+                    <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('copyBtn').addEventListener('click', function () {
+        navigator.clipboard.writeText('@Model.AccountNumber').then(function () {
+            var btn = document.getElementById('copyBtn');
+            btn.innerHTML = '<i class="bi bi-check2 me-1"></i> Copied!';
+            setTimeout(function () {
+                btn.innerHTML = '<i class="bi bi-copy me-1"></i> Copy';
+            }, 2000);
+        });
+    });
+</script>

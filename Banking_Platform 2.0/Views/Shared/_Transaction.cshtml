@@ -1,0 +1,458 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.TransactionDTO
+
+<style>
+    /* Only what Bootstrap cannot do */
+    .form-control {
+        border-bottom: 2px solid #dee2e6 !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        font-weight: 600;
+    }
+
+        .form-control:focus {
+            border-bottom: 2px solid #0d6efd !important;
+            box-shadow: none !important;
+        }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Step indicator */
+    .step-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        background-color: #e9ecef;
+        color: #adb5bd;
+        transition: all 0.3s ease;
+    }
+
+    .step-item.active .step-circle {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(73,43,196,0.3);
+    }
+
+    .step-item.done .step-circle {
+        background-color: #198754;
+        color: #fff;
+    }
+
+    .step-text {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #adb5bd;
+        margin-top: 5px;
+    }
+
+    .step-item.active .step-text {
+        color: #492bc4;
+    }
+
+    .step-item.done .step-text {
+        color: #198754;
+    }
+
+    .step-line {
+        flex: 1;
+        height: 3px;
+        background-color: #e9ecef;
+        border-radius: 2px;
+        margin-bottom: 24px;
+        transition: background-color 0.3s ease;
+    }
+
+        .step-line.done {
+            background-color: #198754;
+        }
+
+    /* Gradient account cards */
+    .card-from {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .card-to {
+        background: linear-gradient(135deg, #1565c0, #1e88e5);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .acc-balance {
+        font-size: 24px;
+        font-weight: 800;
+        color: #fdcc49;
+    }
+
+    /* Confirm button */
+    .btn-confirm {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        border: none;
+        font-weight: 700;
+        transition: all 0.3s;
+    }
+
+        .btn-confirm:hover:not(:disabled) {
+            background: linear-gradient(135deg, #3a1fa8, #6843d0);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(73,43,196,0.3);
+        }
+
+        .btn-confirm:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+</style>
+
+<div class="container mt-5 px-4">
+
+    
+    <div class="mb-4">
+        <h2 class="text-center"><span class="border-bottom">Fund Transfer</span></h2>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            
+            <div class="d-flex align-items-center mb-4">
+                <div class="step-item active d-flex flex-column align-items-center" id="stepItem1">
+                    <div class="step-circle" id="stepCircle1">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <div class="step-text">Accounts</div>
+                </div>
+
+                <div class="step-line mx-1" id="stepLine1"></div>
+
+                <div class="step-item d-flex flex-column align-items-center" id="stepItem2">
+                    <div class="step-circle" id="stepCircle2">
+                        <i class="bi bi-currency-rupee"></i>
+                    </div>
+                    <div class="step-text">Amount</div>
+                </div>
+
+                <div class="step-line mx-1" id="stepLine2"></div>
+
+                <div class="step-item d-flex flex-column align-items-center" id="stepItem3">
+                    <div class="step-circle" id="stepCircle3">
+                        <i class="bi bi-check2"></i>
+                    </div>
+                    <div class="step-text">Confirm</div>
+                </div>
+            </div>
+
+            <form id="transferForm"
+                  asp-controller="Admin" asp-action="Transfer" method="post">
+                @Html.AntiForgeryToken()
+
+                
+                <div id="panel1">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+
+                        <p class="text-uppercase fw-bold text-secondary small mb-1">
+                            Sender Account
+                        </p>
+                        <div class="mb-3 position-relative">
+                            <input asp-for="FromAcId"
+                                   class="form-control ps-0"
+                                   placeholder="Enter Sender Account Number"
+                                   id="fromAccNo" autocomplete="off" />
+                            <i class="bi bi-credit-card position-absolute top-50 end-0 translate-middle-y text-primary me-1"></i>
+                            <span asp-validation-for="FromAcId" class="text-danger small"></span>
+                        </div>
+
+                        <p class="text-uppercase fw-bold text-secondary small mb-1 mt-2">
+                            Receiver Account
+                        </p>
+                        <div class="mb-4 position-relative">
+                            <input asp-for="ToAcId"
+                                   class="form-control ps-0"
+                                   placeholder="Enter Receiver Account Number"
+                                   id="toAccNo" autocomplete="off" />
+                            <i class="bi bi-credit-card-2-front position-absolute top-50 end-0 translate-middle-y text-primary me-1"></i>
+                            <span asp-validation-for="ToAcId" class="text-danger small"></span>
+                        </div>
+
+                        <button type="button"
+                                class="btn btn-confirm btn-lg text-white w-100 rounded-3"
+                                id="fetchNamesBtn">
+                            <i class="bi bi-search me-2"></i> Find Accounts
+                        </button>
+
+                    </div>
+                </div>
+
+                
+                <div id="panel2" class="d-none">
+
+                    
+                    <div class="card-from p-4 mb-0 text-white">
+                        <p class="text-uppercase opacity-75 mb-1" style="font-size:11px; letter-spacing:.07em;">From</p>
+                        <h5 class="fw-bold mb-1" id="fromName">—</h5>
+                        <p class="opacity-75 mb-3" style="font-size:13px; letter-spacing:.1em;" id="fromAccNoDisplay">••••</p>
+                        <hr class="border-white opacity-25 my-0 mb-2">
+                        <p class="text-uppercase opacity-75 mb-0" style="font-size:11px;">Available Balance</p>
+                        <p class="acc-balance mb-0" id="fromBalance">₹ —</p>
+                    </div>
+
+                    
+                    <div class="text-center my-2 fs-3 text-primary">
+                        <i class="bi bi-arrow-down-circle-fill"></i>
+                    </div>
+
+                   
+                    <div class="card-to p-4 text-white mb-3">
+                        <p class="text-uppercase opacity-75 mb-1" style="font-size:11px; letter-spacing:.07em;">To</p>
+                        <h5 class="fw-bold mb-1" id="toName">—</h5>
+                        <p class="opacity-75 mb-3" style="font-size:13px; letter-spacing:.1em;" id="toAccNoDisplay">••••</p>
+                        <hr class="border-white opacity-25 my-0 mb-2">
+                        <p class="text-uppercase opacity-75 mb-0" style="font-size:11px;">Account Type</p>
+                        <p class="fw-bold fs-5 mb-0" id="toType">—</p>
+                    </div>
+
+                    
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-3"
+                         style="background:#f8f6ff; border: 1px dashed #c5b8f5 !important;">
+
+                        <p class="text-uppercase fw-bold text-secondary small text-center mb-3">
+                            Enter Amount
+                        </p>
+
+                        <div class="position-relative mb-2">
+                            <input asp-for="Amount"
+                                   type="number"
+                                   class="form-control text-center ps-0 fs-4 fw-bold"
+                                   placeholder="₹ 0.00"
+                                   id="transferAmount"
+                                   min="1"
+                                   style="color:#492bc4;" />
+                            <i class="bi bi-currency-rupee position-absolute top-50 end-0 translate-middle-y text-primary me-1"></i>
+                            <span asp-validation-for="Amount" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between px-1 mt-2">
+                            <small class="text-muted">Balance after transfer</small>
+                            <small class="fw-bold" id="balanceAfter">₹ —</small>
+                        </div>
+                    </div>
+
+                    
+                    <input asp-for="TransferMode" type="hidden" value="IMPS" />
+
+                    
+                    <div class="d-flex gap-2">
+                        <button type="button"
+                                class="btn btn-outline-secondary fw-bold rounded-3"
+                                style="width:20%;"
+                                id="backBtn">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <button type="submit"
+                                class="btn btn-confirm text-white fw-bold rounded-3"
+                                style="width:80%;"
+                                id="submitBtn" disabled>
+                            <i class="bi bi-send me-2"></i> Confirm Transfer
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+
+            let senderBalance = 0;
+
+            // ── Find Accounts ─────────────────────────────────────────────────
+            $('#fetchNamesBtn').on('click', function () {
+                var fromAccNo = $('#fromAccNo').val().trim();
+                var toAccNo   = $('#toAccNo').val().trim();
+
+                if (!fromAccNo) { alert('Please enter sender account number.');   return; }
+                if (!toAccNo)   { alert('Please enter receiver account number.'); return; }
+                if (fromAccNo === toAccNo) {
+                    alert('Sender and receiver accounts cannot be the same.');
+                    return;
+                }
+
+                var btn = $(this);
+                btn.prop('disabled', true)
+                   .html('<span class="spinner-border spinner-border-sm me-2"></span> Finding...');
+
+                var fetchFrom = $.ajax({
+                    url: '@Url.Action("GetAccountDetails", "Admin")',
+                    type: 'GET',
+                    data: { accountNumber: fromAccNo }
+                });
+
+                var fetchTo = $.ajax({
+                    url: '@Url.Action("GetAccountDetails", "Admin")',
+                    type: 'GET',
+                    data: { accountNumber: toAccNo }
+                });
+
+                $.when(fetchFrom, fetchTo).done(function (resFrom, resTo) {
+                    btn.prop('disabled', false)
+                       .html('<i class="bi bi-search me-2"></i> Find Accounts');
+
+                    var from = resFrom[0];
+                    var to   = resTo[0];
+
+                    if (!from.success) { alert(from.message || 'Sender account not found.');   return; }
+                    if (!to.success)   { alert(to.message   || 'Receiver account not found.'); return; }
+
+                    senderBalance = from.balance;
+
+                    // Populate cards
+                    $('#fromName').text(from.holderName);
+                    $('#fromAccNoDisplay').text(formatAccNo(fromAccNo));
+                    $('#fromBalance').text('₹ ' + formatAmount(from.balance));
+
+                    $('#toName').text(to.holderName);
+                    $('#toAccNoDisplay').text(formatAccNo(toAccNo));
+                    $('#toType').text(to.accountType);
+
+                    // Switch panels
+                    $('#panel1').addClass('d-none');
+                    $('#panel2').removeClass('d-none');
+
+                    // Advance step indicator
+                    markDone(1);
+                    markActive(2);
+
+                }).fail(function () {
+                    btn.prop('disabled', false)
+                       .html('<i class="bi bi-search me-2"></i> Find Accounts');
+                    alert('Error fetching account details. Please try again.');
+                });
+            });
+
+            // ── Back Button ───────────────────────────────────────────────────
+            $('#backBtn').on('click', function () {
+                $('#panel2').addClass('d-none');
+                $('#panel1').removeClass('d-none');
+                $('#transferAmount').val('');
+                $('#balanceAfter').text('₹ —').removeClass('text-danger text-success');
+                $('#submitBtn').prop('disabled', true);
+                resetSteps();
+            });
+
+            // ── Live Balance After ─────────────────────────────────────────────
+            $('#transferAmount').on('input', function () {
+                var amount    = parseFloat($(this).val()) || 0;
+                var remaining = senderBalance - amount;
+
+                if (amount > 0) {
+                    $('#balanceAfter')
+                        .text('₹ ' + formatAmount(remaining))
+                        .removeClass('text-danger text-success')
+                        .addClass(remaining < 0 ? 'text-danger' : 'text-success');
+
+                    if (remaining >= 0) {
+                        $('#submitBtn').prop('disabled', false);
+                        markDone(2);
+                        markActive(3);
+                    } else {
+                        $('#submitBtn').prop('disabled', true);
+                        markActive(2);
+                        resetStep(3);
+                    }
+                } else {
+                    $('#balanceAfter').text('₹ —').removeClass('text-danger text-success');
+                    $('#submitBtn').prop('disabled', true);
+                    markActive(2);
+                    resetStep(3);
+                }
+            });
+
+            // ── Submit ─────────────────────────────────────────────────────────
+            $('#transferForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var amount = parseFloat($('#transferAmount').val()) || 0;
+                if (amount <= 0)            { alert('Enter a valid amount.'); return; }
+                if (amount > senderBalance) { alert('Insufficient balance.'); return; }
+
+                var btn = $('#submitBtn');
+                btn.prop('disabled', true)
+                   .html('<span class="spinner-border spinner-border-sm me-2"></span> Processing...');
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        $('#tgt').html(response);
+                    },
+                    error: function () {
+                        btn.prop('disabled', false)
+                           .html('<i class="bi bi-send me-2"></i> Confirm Transfer');
+                        alert('Transfer failed. Please try again.');
+                    }
+                });
+            });
+
+            // ── Enter key support ──────────────────────────────────────────────
+            $('#fromAccNo, #toAccNo').on('keypress', function (e) {
+                if (e.which === 13) { e.preventDefault(); $('#fetchNamesBtn').trigger('click'); }
+            });
+
+            // ── Step Helpers ───────────────────────────────────────────────────
+            function markDone(n) {
+                $('#stepItem' + n).removeClass('active').addClass('done');
+                if ($('#stepLine' + n).length) $('#stepLine' + n).addClass('done');
+            }
+
+            function markActive(n) {
+                $('#stepItem' + n).addClass('active').removeClass('done');
+            }
+
+            function resetStep(n) {
+                $('#stepItem' + n).removeClass('active done');
+            }
+
+            function resetSteps() {
+                [1, 2, 3].forEach(function (n) {
+                    $('#stepItem' + n).removeClass('active done');
+                    if ($('#stepLine' + n).length) $('#stepLine' + n).removeClass('done');
+                });
+                markActive(1);
+            }
+
+            // ── Format Helpers ─────────────────────────────────────────────────
+            function formatAccNo(v) {
+                return v.replace(/(.{4})/g, '$1 ').trim();
+            }
+
+            function formatAmount(v) {
+                return parseFloat(v).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+        });
+    </script>
+}

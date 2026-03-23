@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
 namespace Banking_Platform_2._0.Controllers
 {
+    [Route("[controller]")]
     public class UserController : Controller
     {
         private readonly BankingDbContext db;
@@ -13,11 +14,12 @@ namespace Banking_Platform_2._0.Controllers
         {
             db = _db;
         }
+        [HttpGet("user-register")]
         public IActionResult Register()
         {
             return View();
         }
-        [HttpPost]
+        [HttpPost("verify-account")]
         public IActionResult VerifyAccount(RegistrationDTO reg)
         {
             /*try
@@ -143,7 +145,7 @@ namespace Banking_Platform_2._0.Controllers
                 });
             }
         }
-        [HttpPost]
+        [HttpPost("user-register")]
         public IActionResult Register(RegistrationDTO reg)
         {
             try
@@ -170,6 +172,7 @@ namespace Banking_Platform_2._0.Controllers
                 return Json(new { message = err.Message });
             }
         }
+        [HttpGet("home")]
         public IActionResult Dashboard()
         {
             return View();

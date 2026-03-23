@@ -1,0 +1,385 @@
+﻿@model Banking_Platform_2._0.Models.DTO_Models.WithdrwalDTO
+
+<style>
+    .card {
+        border: none;
+    }
+
+    .form-control {
+        border-bottom: 2px solid #eee !important;
+        border: none;
+        font-weight: 600;
+    }
+
+        .form-control:focus {
+            color: #495057;
+            background-color: #fff;
+            outline: 0;
+            box-shadow: none;
+            border-radius: 0px;
+            border-bottom: 2px solid blue !important;
+        }
+
+    .inputbox {
+        position: relative;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+        .inputbox i {
+            position: absolute;
+            top: 13px;
+            right: 8px;
+            color: #3F51B5;
+        }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .account-card {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        border-radius: 16px;
+        color: white;
+        padding: 24px;
+    }
+
+        .account-card .label {
+            font-size: 12px;
+            opacity: 0.75;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .account-card .value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .account-card .balance {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fdcc49;
+        }
+
+    .section-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+    }
+
+    .point {
+        cursor: pointer;
+    }
+
+    .btn-withdraw {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        color: white;
+        border: none;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+        .btn-withdraw:hover {
+            background: linear-gradient(135deg, #3a1fa8, #6843d0);
+            color: white;
+        }
+
+    .alert-info-custom {
+        background-color: #f0ecff;
+        border-left: 4px solid #492bc4;
+        color: #492bc4;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="container mt-5 px-5">
+    <div class="mb-4">
+        <h2 class="text-center"><span class="border-bottom">Withdraw</span></h2>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="row g-4">
+
+                <!-- Left: Form -->
+                <div class="col-md-7">
+                    <form id="withdrawForm" asp-controller="Admin" asp-action="Withdraw" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="card p-4 shadow-sm">
+
+                            <!-- Account Number -->
+                            <div class="inputbox mt-2">
+                                <p class="section-label">Account Number</p>
+                                <div class="position-relative">
+                                    <input asp-for="WidtdrawAccountNo" class="form-control"
+                                           placeholder="Enter Account Number" required
+                                           id="accountNumber" autocomplete="off" />
+                                    <i class="bi bi-credit-card"></i>
+                                </div>
+                                <span asp-validation-for="WidtdrawAccountNo" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Account Holder (auto-filled, readonly) -->
+                            <div class="inputbox mt-2">
+                                <p class="section-label">Account Holder</p>
+                                <div class="position-relative">
+                                    <input asp-for="AccountHolderName" class="form-control"
+                                           placeholder="Auto-filled on verify"
+                                           readonly id="accountHolderName" />
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+
+                            <!-- Amount -->
+                            <div class="inputbox mt-2">
+                                <p class="section-label">Amount (₹)</p>
+                                <div class="position-relative">
+                                    <input asp-for="Amount" type="number" class="form-control"
+                                           placeholder="Enter Amount" required min="1" id="withdrawAmount" />
+                                    <i class="bi bi-currency-rupee"></i>
+                                </div>
+                                <span asp-validation-for="Amount" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Withdraw Mode -->
+                            <div class="mt-2 mb-3">
+                                <p class="section-label">Withdraw Mode</p>
+                                <div class="d-flex gap-4">
+                                    <div>
+                                        <input asp-for="WithdrawMode" type="radio" value="Cash" id="cash" class="point" />
+                                        <label class="point" for="cash">Cash</label>
+                                    </div>
+                                    <div>
+                                        <input asp-for="WithdrawMode" type="radio" value="Cheque" id="cheque" class="point" />
+                                        <label class="point" for="cheque">Cheque</label>
+                                    </div>
+                                    @* <div>
+                                        <input asp-for="WithdrawMode" type="radio" value="Online" id="online" class="point" />
+                                        <label class="point" for="online">Online</label>
+                                    </div> *@
+                                </div>
+                                <span asp-validation-for="WithdrawMode" class="text-danger small"></span>
+                            </div>
+
+                           @*  <!-- Cheque Number (shown only for Cheque) -->
+                            <div class="inputbox mt-2 d-none" id="chequeSection">
+                                <p class="section-label">Cheque Number</p>
+                                <div class="position-relative">
+                                    <input asp-for="ChequeNumber" class="form-control"
+                                           placeholder="Enter Cheque Number" id="chequeNumber" />
+                                    <i class="bi bi-upc"></i>
+                                </div>
+                                <span asp-validation-for="ChequeNumber" class="text-danger small"></span>
+                            </div>
+ *@
+                            <!-- Remark -->
+                            <div class="inputbox mt-2">
+                                <p class="section-label">Remark (Optional)</p>
+                                <div class="position-relative">
+                                    <input asp-for="Remark" class="form-control" placeholder="Add a note..." />
+                                    <i class="bi bi-chat-left-text"></i>
+                                </div>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="mt-3 mb-2">
+                                @* <button type="button" class="btn btn-outline-secondary w-100 mb-2 fw-bold"
+                                        id="verifyBtn">
+                                    <i class="bi bi-search me-1"></i> Verify Account
+                                </button> *@
+                                <button type="submit" class="btn btn-withdraw w-100 fw-bolder"
+                                        id="submitBtn" disabled>
+                                    <i class="bi bi-arrow-down-circle me-1"></i> Withdraw
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right: Account Info Card + Notice -->
+                <div class="col-md-5 d-flex flex-column gap-3">
+
+                    <!-- Account Preview Card -->
+                    <div class="account-card" id="accountPreview">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <p class="label mb-0">Account Holder</p>
+                                <p class="value mb-0" id="previewName">— —</p>
+                            </div>
+                            <i class="bi bi-bank2 fs-3 opacity-75"></i>
+                        </div>
+                        <div class="mb-3">
+                            <p class="label mb-0">Account Number</p>
+                            <p class="value mb-0" id="previewAccNo">•••• •••• ••••</p>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <p class="label mb-0">Available Balance</p>
+                                <p class="balance mb-0" id="previewBalance">₹ —</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="label mb-0">Account Type</p>
+                                <p class="value mb-0" id="previewType">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Notice -->
+                    <div class="alert-info-custom p-3">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Note:</strong> Enter the account number and click
+                        <em>Verify Account</em> to load account details before withdrawing.
+                        Minimum withdrawal amount is <strong>₹1</strong>.
+                    </div>
+
+                    <!-- Transaction Summary (shown after amount entered) -->
+                    <div class="card p-3 shadow-sm d-none" id="summaryCard">
+                        <p class="section-label mb-2">Transaction Summary</p>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Withdraw Amount</span>
+                            <span class="fw-bold text-danger" id="summaryAmount">₹ 0</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Available Balance</span>
+                            <span class="fw-bold" id="summaryBalance">₹ —</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted">Remaining Balance</span>
+                            <span class="fw-bold text-success" id="summaryRemaining">₹ —</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+
+            let verifiedBalance = 0;
+
+            // Show/hide cheque number field
+            $('input[name="WithdrawMode"]').on('change', function () {
+                if ($(this).val() === 'Cheque') {
+                    $('#chequeSection').removeClass('d-none');
+                    $('#chequeNumber').attr('required', true);
+                } else {
+                    $('#chequeSection').addClass('d-none');
+                    $('#chequeNumber').removeAttr('required').val('');
+                }
+            });
+
+            // Verify account
+            $('#verifyBtn').on('click', function () {
+                var accNo = $('#accountNumber').val().trim();
+                if (!accNo) {
+                    alert('Please enter an account number.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("GetAccountDetails", "Admin")',
+                    type: 'GET',
+                    data: { accountNumber: accNo },
+                    success: function (res) {
+                        if (res && res.success) {
+                            verifiedBalance = res.balance;
+
+                            // Fill form field
+                            $('#accountHolderName').val(res.holderName);
+
+                            // Update preview card
+                            $('#previewName').text(res.holderName);
+                            $('#previewAccNo').text(accNo);
+                            $('#previewBalance').text('₹ ' + res.balance.toLocaleString('en-IN'));
+                            $('#previewType').text(res.accountType);
+
+                            // Enable submit
+                            $('#submitBtn').prop('disabled', false);
+
+                            // Show summary card
+                            $('#summaryCard').removeClass('d-none');
+                            updateSummary();
+                        } else {
+                            alert(res.message || 'Account not found.');
+                            resetPreview();
+                        }
+                    },
+                    error: function () {
+                        alert('Error verifying account. Please try again.');
+                        resetPreview();
+                    }
+                });
+            });
+
+            // Live transaction summary update
+            $('#withdrawAmount').on('input', function () {
+                updateSummary();
+            });
+
+            function updateSummary() {
+                var amount = parseFloat($('#withdrawAmount').val()) || 0;
+                var remaining = verifiedBalance - amount;
+                $('#summaryAmount').text('₹ ' + amount.toLocaleString('en-IN'));
+                $('#summaryBalance').text('₹ ' + verifiedBalance.toLocaleString('en-IN'));
+                $('#summaryRemaining').text('₹ ' + remaining.toLocaleString('en-IN'));
+
+                if (remaining < 0) {
+                    $('#summaryRemaining').removeClass('text-success').addClass('text-danger');
+                } else {
+                    $('#summaryRemaining').removeClass('text-danger').addClass('text-success');
+                }
+            }
+
+            function resetPreview() {
+                verifiedBalance = 0;
+                $('#accountHolderName').val('');
+                $('#previewName').text('— —');
+                $('#previewAccNo').text('•••• •••• ••••');
+                $('#previewBalance').text('₹ —');
+                $('#previewType').text('—');
+                $('#submitBtn').prop('disabled', true);
+                $('#summaryCard').addClass('d-none');
+            }
+
+            // AJAX form submit → partial replace into #tgt
+            $('#withdrawForm').on('submit', function (e) {
+                e.preventDefault();
+
+                // Guard: insufficient balance
+                var amount = parseFloat($('#withdrawAmount').val()) || 0;
+                if (verifiedBalance > 0 && amount > verifiedBalance) {
+                    alert('Insufficient balance.');
+                    return;
+                }
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        $('#tgt').html(response);
+                    },
+                    error: function () {
+                        alert('Withdrawal failed. Please try again.');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

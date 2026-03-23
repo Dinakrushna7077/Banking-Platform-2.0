@@ -8,6 +8,7 @@ using Microsoft.Net.Http.Headers;
 
 namespace Banking_Platform_2._0.Controllers
 {
+    [Route("login")]
     public class LoginController : Controller
     {
         private readonly BankingDbContext db;
@@ -15,12 +16,13 @@ namespace Banking_Platform_2._0.Controllers
         {
             db = _db;
         }
+        [HttpGet("user-login")]
         public IActionResult Login()
         {
             LoginDTO login = new LoginDTO();
             return View(login);
         }
-        [HttpPost]
+        [HttpPost("user-login")]
         public IActionResult Login(LoginDTO u)
         {
             if (IsValidEmail(u.Identifier))
@@ -28,16 +30,21 @@ namespace Banking_Platform_2._0.Controllers
                 var user = db.Users.Where(x => x.Email == u.Identifier).FirstOrDefault();
                 if (user != null)
                 {
-                    if (user.Email == u.Identifier)
+                    if (user.Password == u.Password)
                     {
                         HttpContext.Session.SetInt32("UserID", user.UserId);
                         HttpContext.Session.SetString("Username", user.Username);
                         HttpContext.Session.SetInt32("Role",user.RoleId);
-                        return RedirectToAction("Dashboard", "Admin");
+                        return user.RoleId switch
+                        {
+                            1 => RedirectToAction("home", "Admin"),
+                            2 => RedirectToAction("home", "Admin"),
+                            3 => RedirectToAction("home", "User")
+                        };
                     }
                     else
                     {
-                        ViewBag.Error = "Invalid Password";
+                        ViewBag.PassError = "Invalid Password";
                     }
                 }
                 else
@@ -50,21 +57,21 @@ namespace Banking_Platform_2._0.Controllers
                 var user = db.Users.Where(x => x.Username == u.Identifier).FirstOrDefault();
                 if (user != null)
                 {
-                    if (user.Username == u.Identifier)
+                    if (user.Password == u.Password)
                     {
                         HttpContext.Session.SetInt32("UserID", user.UserId);
                         HttpContext.Session.SetString("Username", user.Username);
                         HttpContext.Session.SetInt32("Role", user.RoleId);
                         return user.RoleId switch
                         {
-                            1 => RedirectToAction("Dashboard", "Admin"),
-                            2 => RedirectToAction("Dashboard", "Admin"),
-                            3 => RedirectToAction("Dashboard", "User")
+                            1 => RedirectToAction("home", "Admin"),
+                            2 => RedirectToAction("home", "Admin"),
+                            3 => RedirectToAction("home", "User")
                         };
                     }
                     else
                     {
-                        ViewBag.Error = "Invalid Password";
+                        ViewBag.PassError = "Invalid Password";
                     }
                 }
                 else
@@ -78,7 +85,8 @@ namespace Banking_Platform_2._0.Controllers
         {
             return Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
-        
+
+        [HttpGet("logout")]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

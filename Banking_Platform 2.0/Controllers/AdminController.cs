@@ -6,6 +6,7 @@ using System.Security.Principal;
 
 namespace Banking_Platform_2._0.Controllers
 {
+    [Route("admin")]
     public class AdminController : Controller
     {
         private readonly BankingDbContext db;
@@ -13,40 +14,45 @@ namespace Banking_Platform_2._0.Controllers
         {
             db = _db;
         }
+        [HttpGet("home")]
         public IActionResult Dashboard()
         {
             return View();
         }
+        [HttpGet("deposite")]
         public IActionResult Deposit()
         {
-            Transaction tr = new Transaction();
-            return PartialView("_Deposit", tr);
+            DepositeDTO tr = new DepositeDTO();
+            return PartialView("_Deposite", tr);
         }
-        [HttpPost]
+        [HttpPost("deposite")]
         public IActionResult Deposit(Transaction tr)
         {
             return PartialView("_Deposit");
         }
+        [HttpGet("withdraw")]
         public IActionResult Withdraw()
         {
-            Transaction tr = new Transaction();
+            WithdrwalDTO tr = new WithdrwalDTO();
             return PartialView("_Withdraw", tr);
         }
-        [HttpPost]
+        [HttpPost("withdraw")]
         public IActionResult Withdraw(Transaction tr)
         {
             return PartialView("_Withdraw", tr);
         }
+        [HttpGet("transfer")]
         public IActionResult Transfer()
         {
-            Transaction tr = new Transaction();
-            return PartialView("_Transfer", tr);
+            TransactionDTO tr = new TransactionDTO();
+            return PartialView("_Transaction", tr);
         }
-        [HttpPost]
+        [HttpPost("transfer")]
         public IActionResult Transfer(Transaction tr)
         {
-            return PartialView("_Transfer", tr);
+            return PartialView("_Transaction", tr);
         }
+        [HttpGet("create-account")]
         public IActionResult New_Account()
         {
             ViewBag.States = GetStates();
@@ -55,37 +61,49 @@ namespace Banking_Platform_2._0.Controllers
             NewAccountDTO tr = new NewAccountDTO();
             return PartialView("_NewAccount", tr);
         }
-        [HttpPost]
+        [HttpPost("create-account")]
         public IActionResult New_Account(NewAccountDTO ac)
         {
             if (InsertIntoUser(ac) > 0)
             {
                 int UId = db.Users.Where(u => u.Email == ac.Email && u.PhoneNo == ac.MobileNumber.ToString()).FirstOrDefault().UserId;
-                if (InsertIntoAcc(ac, UId) > 0)
+                long accNo = InsertIntoAcc(ac, UId);
+                if (accNo > 0)
                 {
                     InsertIntoCustomer(ac, UId);
+                    var acDetails = new CreatedAccountDto()
+                    {
+                        AccountNumber = accNo,
+                        HolderName = ac.Name,
+                        Balance = Convert.ToDecimal(ac.InitialDeposit)
+                    };
+                    return PartialView("_AccountDetails", acDetails);
                 }
             }
-
 
             ViewBag.States = GetStates();
             ViewBag.Countries = GetCountries();
             ViewBag.Branch = GetBranch();
-            return PartialView("_NewAccount", ac);
+            return PartialView("_AccountDetails", ac);
         }
-        private int InsertIntoAcc(NewAccountDTO ac, int uid)
+        private long InsertIntoAcc(NewAccountDTO ac, int uid)
         {
             AccountMst account = new AccountMst()
             {
                 AccType = ac.AccountType,
                 Balance = Convert.ToDecimal(ac.InitialDeposit),
-                BranchId = ac.BranchCode,
+                BranchId = db.Branches.Where(b => b.BranchCode == ac.BranchCode.ToString()).FirstOrDefault().BranchId,
                 Status = true,
                 AccountNo = CreatAccNo(),
-                //CreatedDt = DateTime.Now,
+                CreatedDt = DateOnly.FromDateTime(DateTime.Now)
             };
             db.AccountMsts.Add(account);
-            return db.SaveChanges();
+            int x=db.SaveChanges();
+            if(x==0)
+            {
+                return 0;
+            }
+            return account.AccountNo;
         }
         private int InsertIntoUser(NewAccountDTO ac)
         {
@@ -142,7 +160,7 @@ namespace Banking_Platform_2._0.Controllers
             string dobPart = dateOfBirth.ToString("ddMMyyyy");
             return $"@{firstThreeLetters}{dobPart}";
         }
-        [HttpGet]
+        [HttpGet("get-ifsc")]
         public JsonResult GetIfscByBranchId(string branchId)
         {
             // Example: lookup from DB
@@ -153,26 +171,51 @@ namespace Banking_Platform_2._0.Controllers
 
             return Json(new { ifsc = ifscCode, branchId });
         }
-
+        [HttpGet("modify-account")]
         public IActionResult Modify()
         {
-            Transaction tr = new Transaction();
-            return PartialView("_Modify_Account", tr);
+            ModifyAccountDto ac = new ModifyAccountDto();
+            return PartialView("_Modify", ac);
         }
         [HttpPost]
-        public IActionResult Modify(Transaction tr)
+        public IActionResult Modify(ModifyAccountDto ac)
         {
-            return PartialView("_Modify_Account", tr);
+            return PartialView("_Modify_Account", ac);
         }
+        [HttpGet("balance-check")]
         public IActionResult Balance_Inquary()
         {
-            Transaction tr = new Transaction();
-            return PartialView("_Balance_Inquary", tr);
+            CheckBalanceDTO tr = new CheckBalanceDTO();
+            return PartialView("_BalanceInquary", tr);
         }
         [HttpPost]
         public IActionResult Balance_Inquary(Transaction tr)
         {
             return PartialView("_Balance_Inquary", tr);
+
+            {
+                return Json(new
+                {
+                    success = true,
+                    accountNumber = "123456789012",
+                    holderName = "John Doe",
+                    accountType = "Saving",
+                    balance = 25000.00,
+                    branchName = "Main Branch",
+                    ifscCode = "BANK0001234",
+                    status = "Active",
+                    openingDate = "01 Jan 2022",
+                    mobile = "98XXXXXX01",
+                    totalCredits = 80000,
+                    totalDebits = 55000,
+                    totalTransactions = 42,
+                    lastTransactionDate = "10 Mar 2026",
+                    recentTransactions = new[] {
+        new { date = "10 Mar", description = "UPI Transfer", type = "Credit", amount = 5000 },
+        // ...
+    }
+                });
+            }
         }
 
         private List<SelectListItem> GetStates()

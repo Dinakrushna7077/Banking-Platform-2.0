@@ -47,17 +47,14 @@
                     @using (Html.BeginForm("Login", "Login", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
-
-                        <div class="text-danger pb-2">
-                            @ViewBag.Error
-                        </div>
-
                         <div class="input-group-custom container-fluid">
+                            <div class="text-danger">@ViewBag.Error</div>
                                 <label class="form-label">Email ID Or User Name</label>
                                 <input asp-for="Identifier" type="text" placeholder="Email ID or User Name" class="form-control w-100" />
                         </div>
 
                         <div class="input-group-custom container-fluid">
+                            <div class="text-danger">@ViewBag.PassError</div>
                             <label class="form-label">Password</label>
                             <input asp-for="Password" type="password" placeholder="Password" class="form-control w-100"/>
                         

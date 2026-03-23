@@ -1,160 +1,457 @@
-﻿@model Banking_Platform_2._0.Models.DTO_Models.TransactionDTO
+﻿@model Banking_Platform_2._0.Models.DTO_Models.DepositeDTO
+
 <style>
-
-    .card {
-        border: none;
-    }
-
     .form-control {
         border-bottom: 2px solid #eee !important;
         border: none;
-        font-weight: 600
+        font-weight: 600;
     }
 
         .form-control:focus {
             color: #495057;
             background-color: #fff;
-            border-color: #8bbafe;
             outline: 0;
             box-shadow: none;
             border-radius: 0px;
             border-bottom: 2px solid blue !important;
         }
 
-
-
     .inputbox {
         position: relative;
         margin-bottom: 20px;
-        width: 100%
+        width: 100%;
     }
 
         .inputbox span {
             position: absolute;
             top: 7px;
             left: 11px;
-            transition: 0.5s
+            transition: 0.5s;
+            font-size: 14px;
+            color: #888;
+            pointer-events: none;
         }
 
         .inputbox i {
             position: absolute;
             top: 13px;
             right: 8px;
-            transition: 0.5s;
-            color: #3F51B5
+            color: #3F51B5;
         }
 
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
         -webkit-appearance: none;
-        margin: 0
+        margin: 0;
     }
 
-    .inputbox input:focus ~ span {
-        transform: translateX(-0px) translateY(-15px);
-        font-size: 12px
-    }
-
+    .inputbox input:focus ~ span,
     .inputbox input:valid ~ span {
-        transform: translateX(-0px) translateY(-15px);
-        font-size: 12px
+        transform: translateY(-15px);
+        font-size: 11px;
+        color: #3F51B5;
     }
 
-    .card-blue {
-        background-color: #492bc4;
+    .section-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
     }
 
-    .hightlight {
-        background-color: #5737d9;
-        padding: 10px;
-        border-radius: 10px;
-        margin-top: 15px;
-        font-size: 14px;
+    /* Account Preview Card */
+    .account-card {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        border-radius: 18px;
+        color: white;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(73,43,196,0.25);
     }
 
-    .yellow {
-        color: #fdcc49;
-    }
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 50%;
+        }
 
-    .decoration {
-        text-decoration: none;
-        font-size: 14px;
-    }
+        .account-card::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -30px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
 
+        .account-card .chip {
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(135deg, #fdcc49, #f9a825);
+            border-radius: 5px;
+            margin-bottom: 18px;
+        }
 
+        .account-card .acc-label {
+            font-size: 11px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
 
+        .account-card .acc-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
 
-        .decoration:hover {
-            text-decoration: none;
+        .account-card .acc-number {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .account-card .acc-balance {
+            font-size: 28px;
+            font-weight: 800;
             color: #fdcc49;
         }
+
+    /* Summary Box */
+    .summary-box {
+        background: #f8f6ff;
+        border-radius: 14px;
+        padding: 18px 20px;
+        border: 1px dashed #c5b8f5;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 6px 0;
+        border-bottom: 1px solid #ede9ff;
+    }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row .s-label {
+            color: #888;
+        }
+
+        .summary-row .s-value {
+            font-weight: 700;
+        }
+
+    .btn-deposit {
+        background: linear-gradient(135deg, #492bc4, #7b54e8);
+        color: white;
+        border: none;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+        .btn-deposit:hover {
+            background: linear-gradient(135deg, #3a1fa8, #6843d0);
+            color: white;
+        }
+
+    .alert-info-custom {
+        background-color: #f0ecff;
+        border-left: 4px solid #492bc4;
+        color: #492bc4;
+        font-size: 13px;
+        border-radius: 8px;
+    }
 </style>
-<div class="container mt-5 px-5">
+
+<div class="container mt-5 px-4">
     <div class="mb-4">
         <h2 class="text-center"><span class="border-bottom">Deposit</span></h2>
     </div>
+
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card p-3">
-                @*<h6 class="text-uppercase">Account Number</h6>*@
+        <div class="col-md-11">
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="inputbox mt-3 mr-2">
-                            <input type="text" placeholder="Account Number" name="name" class="form-control" required="required">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex flex-row">
-                            <div class="inputbox mt-3 mr-2"> <input type="text" placeholder="Name" name="name" class="form-control" required="required">  </div>
-                            @*<div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required"> <span>CVV</span> </div>*@
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="inputbox mt-3 mr-2">
-                            <input type="text" name="name" class="form-control" required="required" placeholder="Available Balance">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex flex-row">
-                            <div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required" placeholder="Depositor Name"></div>
-                            @*<div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required"> <span>CVV</span> </div>*@
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="inputbox mt-3 mr-2">
-                            <input type="text" name="name" class="form-control" required="required" placeholder="Deposit Amount">
+            <form id="depositForm" asp-controller="Admin" asp-action="Deposit" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="row g-4">
+
+                    <!-- LEFT: Form -->
+                    <div class="col-md-7">
+                        <div class="card border-0 shadow-sm p-4">
+
+                            <!-- Section: Account Info -->
+                            <p class="section-label mb-3">Account Information</p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="DepositeAccount" class="form-control"
+                                                   placeholder="Account Number"
+                                                   id="accountNumber" autocomplete="off" required />
+                                            <i class="bi bi-credit-card"></i>
+                                        </div>
+                                        <span asp-validation-for="DepositeAccount" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="AccountHolderName" class="form-control"
+                                                   placeholder="Account Holder Name"
+                                                   id="accountHolderName" readonly />
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="AvailableBalance" class="form-control"
+                                                   placeholder="Available Balance"
+                                                   id="availableBalance" readonly />
+                                            <i class="bi bi-wallet2"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="DepositedBy" class="form-control"
+                                                   placeholder="Depositor Name" required />
+                                            <i class="bi bi-person-badge"></i>
+                                        </div>
+                                        <span asp-validation-for="DepositedBy" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="Amount" type="number" class="form-control"
+                                                   placeholder="Deposit Amount"
+                                                   id="depositAmount" min="1" required />
+                                            <i class="bi bi-currency-rupee"></i>
+                                        </div>
+                                        <span asp-validation-for="Amount" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="inputbox">
+                                        <div class="position-relative">
+                                            <input asp-for="Remark" class="form-control"
+                                                   placeholder="Remark (Optional)" />
+                                            <i class="bi bi-chat-left-text"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             
+                            <!-- Submit -->
+                            <div class="mt-2">
+                                @* <button type="button" class="btn btn-outline-secondary w-100 mb-2 fw-bold"
+                                        id="verifyBtn">
+                                    <i class="bi bi-search me-1"></i> Verify Account
+                                </button> *@
+                                <button type="submit" class="btn btn-deposit w-100 py-2 fw-bolder"
+                                        id="submitBtn" disabled>
+                                    <i class="bi bi-arrow-up-circle me-1"></i> Deposit
+                                </button>
+                            </div>
+
                         </div>
                     </div>
 
-                </div>
-                <div class="mt-4 mb-4">
-                    @*<h6 class="text-uppercase">Billing Address</h6>
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required"> <span>Street Address</span> </div>
+                    <!-- RIGHT: Account Card + Summary -->
+                    <div class="col-md-5 d-flex flex-column gap-3">
+
+                        <!-- Account Preview Card -->
+                        <div class="account-card">
+                            <div class="chip"></div>
+                            <div class="acc-number" id="cardAccNo">•••• •••• ••••</div>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <p class="acc-label mb-0">Account Holder</p>
+                                    <p class="acc-value mb-0" id="cardName">— —</p>
+                                </div>
+                                <div class="text-end">
+                                    <p class="acc-label mb-0">Account Type</p>
+                                    <p class="acc-value mb-0" id="cardType">—</p>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required"> <span>City</span> </div>
+                            <hr style="border-color: rgba(255,255,255,0.2); margin: 16px 0 12px;">
+                            <p class="acc-label mb-0">Available Balance</p>
+                            <p class="acc-balance mb-0" id="cardBalance">₹ —</p>
+                        </div>
+
+                        <!-- Deposit Summary -->
+                        <div class="summary-box">
+                            <p class="section-label mb-3">Deposit Summary</p>
+                            <div class="summary-row">
+                                <span class="s-label">Current Balance</span>
+                                <span class="s-value" id="sumCurrent">₹ —</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="s-label">Deposit Amount</span>
+                                <span class="s-value text-primary" id="sumDeposit">₹ 0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="s-label">Balance After Deposit</span>
+                                <span class="s-value text-success" id="sumAfter">₹ —</span>
                             </div>
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required"> <span>State/Province</span> </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="inputbox mt-3 mr-2"> <input type="text" name="name" class="form-control" required="required"> <span>Zip code</span> </div>
-                            </div>
-                        </div>*@
-                    <div class="mt-2 mb-1 d-flex justify-content-center">
-                        <button class="btn btn-success px-3 w-100 fw-bolder">Deposit</button>
+
+                        <!-- Info Notice -->
+                        <div class="alert-info-custom p-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            <strong>Note:</strong> Enter the account number and click
+                            <em>Verify Account</em> to load account details before depositing.
+                        </div>
+
                     </div>
                 </div>
-            </div>
+
+            </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+
+            let verifiedBalance = 0;
+
+            // ── Verify Account ───────────────────────────────────────────────────
+            $('#verifyBtn').on('click', function () {
+                var accNo = $('#accountNumber').val().trim();
+                if (!accNo) { alert('Please enter an account number.'); return; }
+
+                var btn = $(this);
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Verifying...');
+
+                $.ajax({
+                    url: '@Url.Action("GetAccountDetails", "Admin")',
+                    type: 'GET',
+                    data: { accountNumber: accNo },
+                    success: function (res) {
+                        btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
+
+                        if (res && res.success) {
+                            verifiedBalance = res.balance;
+
+                            // Fill readonly fields
+                            $('#accountHolderName').val(res.holderName);
+                            $('#availableBalance').val('₹ ' + formatAmount(res.balance));
+
+                            // Update preview card
+                            $('#cardAccNo').text(formatAccNo(accNo));
+                            $('#cardName').text(res.holderName);
+                            $('#cardType').text(res.accountType);
+                            $('#cardBalance').text('₹ ' + formatAmount(res.balance));
+
+                            // Update summary
+                            $('#sumCurrent').text('₹ ' + formatAmount(res.balance));
+                            updateSummary();
+
+                            $('#submitBtn').prop('disabled', false);
+                        } else {
+                            alert(res.message || 'Account not found.');
+                            resetAll();
+                        }
+                    },
+                    error: function () {
+                        btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
+                        alert('Error verifying account. Please try again.');
+                        resetAll();
+                    }
+                });
+            });
+
+            // Allow Enter key on account number field
+            $('#accountNumber').on('keypress', function (e) {
+                if (e.which === 13) { e.preventDefault(); $('#verifyBtn').trigger('click'); }
+            });
+
+            // ── Live Summary ─────────────────────────────────────────────────────
+            $('#depositAmount').on('input', updateSummary);
+
+            function updateSummary() {
+                var amount = parseFloat($('#depositAmount').val()) || 0;
+                var after  = verifiedBalance + amount;
+                $('#sumDeposit').text('₹ ' + formatAmount(amount));
+                $('#sumAfter').text('₹ ' + formatAmount(after));
+            }
+
+            // ── AJAX Form Submit ─────────────────────────────────────────────────
+            $('#depositForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var amount = parseFloat($('#depositAmount').val()) || 0;
+                if (amount <= 0) { alert('Enter a valid deposit amount.'); return; }
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        $('#tgt').html(response);
+                    },
+                    error: function () {
+                        alert('Deposit failed. Please try again.');
+                    }
+                });
+            });
+
+            // ── Helpers ──────────────────────────────────────────────────────────
+            function resetAll() {
+                verifiedBalance = 0;
+                $('#accountHolderName').val('');
+                $('#availableBalance').val('');
+                $('#cardAccNo').text('•••• •••• ••••');
+                $('#cardName').text('— —');
+                $('#cardType').text('—');
+                $('#cardBalance').text('₹ —');
+                $('#sumCurrent').text('₹ —');
+                $('#sumDeposit').text('₹ 0.00');
+                $('#sumAfter').text('₹ —');
+                $('#submitBtn').prop('disabled', true);
+            }
+
+            function formatAccNo(accNo) {
+                return accNo.replace(/(.{4})/g, '$1 ').trim();
+            }
+
+            function formatAmount(amount) {
+                return parseFloat(amount).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+        });
+    </script>
+}

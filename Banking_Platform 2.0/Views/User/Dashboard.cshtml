@@ -2,29 +2,31 @@
     ViewBag.Title = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml"; // adjust if needed
 }
-
-<link href="~/Content/Site.css" rel="stylesheet" />
+<link href="~/css/site.css" rel="stylesheet" />
 
 <style>
     .toggle-btn {
         cursor: pointer;
     }
+
     .sidebar {
         top: 3.85rem;
     }
+
     .dropdown-item {
         color: #333;
         height: 3rem;
         display: flex;
         align-items: center;
     }
-    .dropdown-item:hover {
-        background-color: white;
-        color: #007bff;
-    }
+
+        .dropdown-item:hover {
+            background-color: white;
+            color: #007bff;
+        }
 </style>
 
-<div class="container-xxl position-relative bg-white d-flex p-0">
+<div class="containe-fluid position-relative bg-white d-flex p-0">
     <!-- Sidebar -->
     <div class="sidebar pe-4 pb-3 position-sticky col-3">
         <nav class="navbar">
@@ -52,7 +54,7 @@
                     </a>
                     <div class="drdn-item-2 bg-transparent border-0 d-none">
                         <a asp-controller="Admin" asp-action="New_Account" class="dropdown-item ajax-link" data-target="tgt">New Account</a>
-                        <a asp-controller="Admin" asp-action="modify-account" class="dropdown-item ajax-link" data-target="tgt">Modify</a>
+                        <a asp-controller="Admin" asp-action="Modify" class="dropdown-item ajax-link" data-target="tgt">Modify</a>
                         <a asp-controller="Admin" asp-action="Balance_Inquary" class="dropdown-item ajax-link" data-target="tgt">Balance Inquiry</a>
                     </div>
                 </div>

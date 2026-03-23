@@ -115,7 +115,11 @@
                 alert("Please enter both Account Number and IFSC Code.");
                 return;
             }
-            $.post('@Url.Action("VerifyAccount", "User")', { AccountNumber: accNo, IFSC: ifsc }, function(res) {
+                    $.post('/User/verify-account',
+        {
+            AccountNumber: accNo,
+            IFSC: ifsc
+        }, function(res) {
                 if(res.success){
                     $('#name').val(res.fullName);
                     $('#step1').hide();

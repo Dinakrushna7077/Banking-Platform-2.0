@@ -5,8 +5,12 @@
         public int TransactionId { get; set; }
         public Nullable<long> FromAcId { get; set; }
         public Nullable<long> ToAcId { get; set; }
+        public string ReceiverAccHolder { get; set; }
+        public string FromAccHolder { get; set; }
         public decimal Amount { get; set; }
         public string Type { get; set; }
         public Nullable<System.DateTime> Timestamp { get; set; }
+        public string Remark { get; set; }
+        public string TransferMode { get; set; }
     }
 }
