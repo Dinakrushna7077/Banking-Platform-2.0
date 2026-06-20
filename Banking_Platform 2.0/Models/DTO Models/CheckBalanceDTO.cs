@@ -2,7 +2,16 @@
 {
     public class CheckBalanceDTO
     {
-        public bool Success { get; set; }
+        public long AccNo { get; set; }
+        public string CustomerName { get; set; }
+        public string AccType { get; set; }
+        public decimal Balance { get; set; }
+        public DateTime CreatedDt { get; set; }
+        public string BranchName { get; set; }
+        public string IFSCCode { get; set; }
+        public long Mobile { get; set; }
+        public string Status { get; set; }
+        /*public bool Success { get; set; }
         public string Message { get; set; }
 
         // Account Card
@@ -22,6 +31,6 @@
         public decimal TotalCredits { get; set; }
         public decimal TotalDebits { get; set; }
         public int TotalTransactions { get; set; }
-        public string LastTransactionDate { get; set; }
+        public string LastTransactionDate { get; set; }*/
     }
 }

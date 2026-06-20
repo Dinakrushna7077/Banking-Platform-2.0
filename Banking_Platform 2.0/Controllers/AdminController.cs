@@ -2,6 +2,7 @@
 using Banking_Platform_2._0.Models.DTO_Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Principal;
 
 namespace Banking_Platform_2._0.Controllers
@@ -59,6 +60,7 @@ namespace Banking_Platform_2._0.Controllers
             ViewBag.Countries = GetCountries();
             ViewBag.Branch = GetBranch();
             NewAccountDTO tr = new NewAccountDTO();
+            tr.DateOfBirth = DateTime.Now;
             return PartialView("_NewAccount", tr);
         }
         [HttpPost("create-account")]
@@ -185,37 +187,79 @@ namespace Banking_Platform_2._0.Controllers
         [HttpGet("balance-check")]
         public IActionResult Balance_Inquary()
         {
-            CheckBalanceDTO tr = new CheckBalanceDTO();
-            return PartialView("_BalanceInquary", tr);
+            return PartialView("_BalanceInquary");
         }
-        [HttpPost]
-        public IActionResult Balance_Inquary(Transaction tr)
+        [HttpPost("balance-check")]
+        public IActionResult Balance_Inquary(long accountNumber,string secondary)
         {
-            return PartialView("_Balance_Inquary", tr);
+            //return PartialView("_Balance_Inquary", tr);
+            var accDetails = (
+                from a in db.AccountMsts
+                join c in db.Customers on a.AccId equals c.AccId
+                join b in db.Branches on a.BranchId equals b.BranchId
+                join u in db.Users on a.AccId equals u.AccId into userGroup
+                from u in userGroup.DefaultIfEmpty()
+                where a.AccountNo == accountNumber
+                select new CheckBalanceDTO
+                {
+                    AccNo = a.AccountNo,
+                    CustomerName = c.Name,
+                    Mobile = Convert.ToInt64(u.PhoneNo),
+                    AccType = a.AccType,
+                    Balance = Convert.ToDecimal(a.Balance),
+                    CreatedDt = Convert.ToDateTime(a.CreatedDt),
+                    BranchName = b.BranchName,
+                    IFSCCode = b.Ifsccode,
+                    Status = a.Status == true ? "Active" : "Closed"
+                }
+            ).ToListAsync();
+            //-------------
+            var summary = db.Transactions
+               .Where(t => t.FromAcId == accountNumber)
+               .GroupBy(t => 1)
+               .Select(g => new
+               {
+                   Deposit = g.Sum(t => t.Type == "Deposit" ? t.Amount : 0),
+                   Withdraw = g.Sum(t => t.Type == "Withdrawal" ? t.Amount : 0), // ✅ fix
+                   TransactionCount = g.Count()
+               })
+               .FirstOrDefaultAsync();
 
-            {
-                return Json(new
+            var lastTransaction = db.Transactions
+                .Where(t => t.FromAcId == accountNumber).Select(x=>new LastTransactionDTO
+                {
+                    FromAcId = x.FromAcId,
+                    ToAcId = x.ToAcId,
+                    Amount = x.Amount,
+                    Type = x.Type,
+                    Timestamp = x.Timestamp
+
+                })
+                .OrderByDescending(t => t.Timestamp)
+                .FirstOrDefault();
+
+            return Json(new
                 {
                     success = true,
-                    accountNumber = "123456789012",
-                    holderName = "John Doe",
-                    accountType = "Saving",
-                    balance = 25000.00,
-                    branchName = "Main Branch",
-                    ifscCode = "BANK0001234",
-                    status = "Active",
-                    openingDate = "01 Jan 2022",
+                    accountNumber = "123456789012",//done
+                    holderName = "John Doe",//done
+                    accountType = "Saving",//done
+                    balance = 25000.00,//done
+                    branchName = "Main Branch",//done
+                    ifscCode = "BANK0001234",//done
+                    status = "Active",//done
+                    openingDate = "01 Jan 2022",//done
                     mobile = "98XXXXXX01",
-                    totalCredits = 80000,
-                    totalDebits = 55000,
-                    totalTransactions = 42,
-                    lastTransactionDate = "10 Mar 2026",
+                    totalCredits = summary.Result?.Withdraw ?? 0,
+                    totalDebits = summary.Result?.Deposit ?? 0,//done
+                    totalTransactions = 42,//done
+                    lastTransactionDate = "10 Mar 2026",//done
                     recentTransactions = new[] {
-        new { date = "10 Mar", description = "UPI Transfer", type = "Credit", amount = 5000 },
-        // ...
-    }
+                    new { date = "10 Mar", description = "UPI Transfer", type = "Credit", amount = 5000 },
+                    // ...
+                    }
                 });
-            }
+           
         }
 
         private List<SelectListItem> GetStates()

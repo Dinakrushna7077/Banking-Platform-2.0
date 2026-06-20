@@ -1,5 +1,5 @@
-﻿@model Banking_Platform_2._0.Models.DTO_Models.CheckBalanceDTO
-
+﻿@* @model Banking_Platform_2._0.Models.DTO_Models.CheckBalanceDTO
+ *@
 <style>
     .form-control {
         border-bottom: 2px solid #eee !important;
@@ -435,10 +435,10 @@
         </div>
     </div>
 </div>
-
+@* 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
+ *@
     <script>
         $(document).ready(function () {
 
@@ -454,8 +454,8 @@
                 btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Checking...');
 
                 $.ajax({
-                    url: '@Url.Action("GetBalanceInquiry", "Admin")',
-                    type: 'GET',
+                url: '@Url.Action("balance-check", "Admin")',
+                    type: 'POST',
                     data: {
                         accountNumber: accNo,
                         secondary: $('#searchSecondary').val().trim()
@@ -552,4 +552,4 @@
 
         });
     </script>
-}
+@* } *@
