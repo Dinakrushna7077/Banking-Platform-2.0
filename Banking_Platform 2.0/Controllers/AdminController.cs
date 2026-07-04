@@ -176,14 +176,82 @@ namespace Banking_Platform_2._0.Controllers
         [HttpGet("modify-account")]
         public IActionResult Modify()
         {
+            ViewBag.States = GetStates();
+            ViewBag.Countries = GetCountries();
+            ViewBag.Branch = GetBranch();
             ModifyAccountDto ac = new ModifyAccountDto();
             return PartialView("_Modify", ac);
         }
-        [HttpPost]
+        [HttpPost("modify-account")]
         public IActionResult Modify(ModifyAccountDto ac)
         {
-            return PartialView("_Modify_Account", ac);
+            AccountMst accountDetails =db.AccountMsts.Where(a => a.AccountNo == Convert.ToInt64(ac.AccountNumber)).FirstOrDefault();
+            if (accountDetails != null)
+            {
+                accountDetails.AccType = ac.AccountType;
+                accountDetails.BranchId = db.Branches.Where(b => b.BranchCode == ac.BranchCode).FirstOrDefault().BranchId;
+                accountDetails.Branch = db.Branches.Where(b => b.BranchCode == ac.BranchCode).FirstOrDefault();
+                db.SaveChanges();
+            }
+            var customerDetails = db.Customers.Where(c => c.AccId == accountDetails.AccId).FirstOrDefault();
+            if (customerDetails != null)
+            {
+                customerDetails.Name = ac.Name;
+                customerDetails.Gender = ac.Gender;
+                customerDetails.FatherName = ac.FatherName;
+                customerDetails.MotherName = ac.MotherName;
+                customerDetails.Country = ac.Country;
+                customerDetails.City = ac.City;
+                db.SaveChanges();
+            }
+            var userDetails = db.Users.Where(u => u.AccId == accountDetails.AccId).FirstOrDefault();
+            if (userDetails != null)
+            {
+                userDetails.Email = ac.Email;
+                userDetails.PhoneNo = ac.MobileNumber.ToString();
+                db.SaveChanges();
+            }
+            ViewBag.States = GetStates();
+            ViewBag.Countries = GetCountries();
+            ViewBag.Branch = GetBranch();
+            ac = null;
+            return StatusCode(200);
         }
+        public IActionResult GetAccountDetails(long accountNumber)
+        {
+            var details = (from c in db.Customers
+                          join a in db.AccountMsts on c.AccId equals a.AccId
+                          join u in db.Users on c.AccId equals u.AccId
+                          join b in db.Branches on a.BranchId equals b.BranchId
+                          where a.AccountNo == accountNumber
+                          select new
+                          {
+                              a.AccountNo,
+                              c.Name,
+                              c.Gender,
+                              c.PhoneNo,
+                              u.Email,
+                              c.FatherName,
+                              c.MotherName,
+                              c.Address,
+                              c.City,
+                              c.Country,
+                              b.BranchName,
+                              b.BranchCode,
+                              b.Ifsccode,
+                              a.AccType,
+                              isActive=a.Status
+                          }).ToList();
+
+
+            if (details .Count()>0)
+            {
+                return Json(new { success = true, data = details });
+            }
+            return Json(new { success = false, message = "Account not found." });
+
+        }
+
         [HttpGet("balance-check")]
         public IActionResult Balance_Inquary()
         {
@@ -193,7 +261,7 @@ namespace Banking_Platform_2._0.Controllers
         public IActionResult Balance_Inquary(long accountNumber,string secondary)
         {
             //return PartialView("_Balance_Inquary", tr);
-            var accDetails = (
+            /*var accDetails = (
                 from a in db.AccountMsts
                 join c in db.Customers on a.AccId equals c.AccId
                 join b in db.Branches on a.BranchId equals b.BranchId
@@ -212,7 +280,7 @@ namespace Banking_Platform_2._0.Controllers
                     IFSCCode = b.Ifsccode,
                     Status = a.Status == true ? "Active" : "Closed"
                 }
-            ).ToListAsync();
+            ).ToListAsync();*/
             //-------------
             var summary = db.Transactions
                .Where(t => t.FromAcId == accountNumber)
@@ -225,7 +293,7 @@ namespace Banking_Platform_2._0.Controllers
                })
                .FirstOrDefaultAsync();
 
-            var lastTransaction = db.Transactions
+            /*var lastTransaction = db.Transactions
                 .Where(t => t.FromAcId == accountNumber).Select(x=>new LastTransactionDTO
                 {
                     FromAcId = x.FromAcId,
@@ -236,7 +304,7 @@ namespace Banking_Platform_2._0.Controllers
 
                 })
                 .OrderByDescending(t => t.Timestamp)
-                .FirstOrDefault();
+                .FirstOrDefault();*/
 
             return Json(new
                 {

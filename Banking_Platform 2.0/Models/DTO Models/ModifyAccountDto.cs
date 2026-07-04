@@ -4,13 +4,11 @@ namespace Banking_Platform_2._0.Models.DTO_Models
 {
     public class ModifyAccountDto
     {
-        // ── Read-only (carried via hidden field) ──────────────────────────────
         [Required]
         public string AccountNumber { get; set; }
 
-        public string IFSCCode { get; set; }  // Auto-filled readonly
+        public string IFSCCode { get; set; }  
 
-        // ── Personal Info ─────────────────────────────────────────────────────
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, MinimumLength = 3)]
         public string Name { get; set; }
@@ -41,6 +39,9 @@ namespace Banking_Platform_2._0.Models.DTO_Models
 
         [Required(ErrorMessage = "Please select a country.")]
         public string Country { get; set; }
+        [Required(ErrorMessage = "Please select a city.")]
+        public string City { get; set; }
+
 
         // ── Branch & Account Type ─────────────────────────────────────────────
         [Required(ErrorMessage = "Please select a branch.")]

@@ -1,0 +1,203 @@
+﻿
+.form-control {
+    border-bottom: 2px solid #eee !important;
+    border: none;
+    font-weight: 600;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    outline: 0;
+    box-shadow: none;
+    border-radius: 0;
+    border-bottom: 2px solid blue !important;
+}
+
+.inputbox {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+    .inputbox i {
+        position: absolute;
+        top: 13px;
+        right: 8px;
+        color: #3F51B5;
+    }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.point {
+    cursor: pointer;
+}
+
+/* ── Section Label ──────────────────────────────────── */
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+}
+
+/* ── Radio Pills ────────────────────────────────────── */
+.radio-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+    .radio-group input[type="radio"] {
+        display: none;
+    }
+
+    .radio-group label {
+        padding: 6px 10px;
+        border-radius: 15px;
+        border: 2px solid #e0e0e0;
+        font-size: 13px;
+        font-weight: 700;
+        color: #888;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+    .radio-group input[type="radio"]:checked + label {
+        border-color: #492bc4;
+        background: #f0ecff;
+        color: #492bc4;
+    }
+
+/* ── Account Preview Card ───────────────────────────── */
+.preview-card {
+    background: linear-gradient(135deg, #492bc4, #7b54e8);
+    border-radius: 18px;
+    padding: 22px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+    .preview-card::after {
+        content: '';
+        position: absolute;
+        bottom: -40px;
+        right: -40px;
+        width: 130px;
+        height: 130px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+    }
+
+    .preview-card .chip {
+        width: 36px;
+        height: 26px;
+        background: linear-gradient(135deg, #fdcc49, #f9a825);
+        border-radius: 5px;
+        margin-bottom: 14px;
+    }
+
+    .preview-card .p-label {
+        font-size: 10px;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+    }
+
+    .preview-card .p-value {
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .preview-card .p-accno {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        opacity: 0.85;
+        margin-bottom: 14px;
+    }
+
+/* ── Summary Box ────────────────────────────────────── */
+.summary-box {
+    background: #f8f6ff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border: 1px dashed #c5b8f5;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid #ede9ff;
+}
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-row .s-label {
+        color: #888;
+    }
+
+    .summary-row .s-value {
+        font-weight: 700;
+        color: #333;
+    }
+
+/* ── Search Bar ─────────────────────────────────────── */
+.search-bar {
+    background: #f8f6ff;
+    border: 1px dashed #c5b8f5;
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+/* ── Btn ────────────────────────────────────────────── */
+.btn-update {
+    background: linear-gradient(135deg, #492bc4, #7b54e8);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+    .btn-update:hover {
+        background: linear-gradient(135deg, #3a1fa8, #6843d0);
+        color: #fff;
+    }
+
+    .btn-update:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+.alert-info-custom {
+    background: #f0ecff;
+    border-left: 4px solid #492bc4;
+    color: #492bc4;
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+/* ── Form Locked State ──────────────────────────────── */
+.form-locked {
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+
+    .form-locked.unlocked {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+

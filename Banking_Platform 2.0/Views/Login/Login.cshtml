@@ -1,6 +1,7 @@
 ﻿@model Banking_Platform_2._0.Models.DTO_Models.LoginDTO
 @{
     ViewBag.Title = "Login Page";
+    //Layout = null; // No layout for this page
 }
 
 <!DOCTYPE html>
@@ -48,14 +49,14 @@
                     {
                         @Html.AntiForgeryToken()
                         <div class="input-group-custom container-fluid">
-                            <div class="text-danger">@ViewBag.Error</div>
                                 <label class="form-label">Email ID Or User Name</label>
+                            <div class="text-danger">@ViewBag.Error</div>
                                 <input asp-for="Identifier" type="text" placeholder="Email ID or User Name" class="form-control w-100" />
                         </div>
 
                         <div class="input-group-custom container-fluid">
-                            <div class="text-danger">@ViewBag.PassError</div>
                             <label class="form-label">Password</label>
+                            <div class="text-danger">@ViewBag.PassError</div>
                             <input asp-for="Password" type="password" placeholder="Password" class="form-control w-100"/>
                         
                         </div>

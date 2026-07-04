@@ -1,207 +1,5 @@
 ﻿@model Banking_Platform_2._0.Models.DTO_Models.ModifyAccountDto
 
-<style>
-    .form-control {
-        border-bottom: 2px solid #eee !important;
-        border: none;
-        font-weight: 600;
-    }
-
-        .form-control:focus {
-            color: #495057;
-            background-color: #fff;
-            outline: 0;
-            box-shadow: none;
-            border-radius: 0;
-            border-bottom: 2px solid blue !important;
-        }
-
-    .inputbox {
-        position: relative;
-        margin-bottom: 20px;
-        width: 100%;
-    }
-
-        .inputbox i {
-            position: absolute;
-            top: 13px;
-            right: 8px;
-            color: #3F51B5;
-        }
-
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    .point {
-        cursor: pointer;
-    }
-
-    /* ── Section Label ──────────────────────────────────── */
-    .section-label {
-        font-size: 11px;
-        font-weight: 700;
-        color: #888;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 4px;
-    }
-
-    /* ── Radio Pills ────────────────────────────────────── */
-    .radio-group {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-        .radio-group input[type="radio"] {
-            display: none;
-        }
-
-        .radio-group label {
-            padding: 6px 18px;
-            border-radius: 20px;
-            border: 2px solid #e0e0e0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.25s;
-        }
-
-        .radio-group input[type="radio"]:checked + label {
-            border-color: #492bc4;
-            background: #f0ecff;
-            color: #492bc4;
-        }
-
-    /* ── Account Preview Card ───────────────────────────── */
-    .preview-card {
-        background: linear-gradient(135deg, #492bc4, #7b54e8);
-        border-radius: 18px;
-        padding: 22px;
-        color: #fff;
-        position: relative;
-        overflow: hidden;
-    }
-
-        .preview-card::after {
-            content: '';
-            position: absolute;
-            bottom: -40px;
-            right: -40px;
-            width: 130px;
-            height: 130px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 50%;
-        }
-
-        .preview-card .chip {
-            width: 36px;
-            height: 26px;
-            background: linear-gradient(135deg, #fdcc49, #f9a825);
-            border-radius: 5px;
-            margin-bottom: 14px;
-        }
-
-        .preview-card .p-label {
-            font-size: 10px;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-        }
-
-        .preview-card .p-value {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .preview-card .p-accno {
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 0.12em;
-            opacity: 0.85;
-            margin-bottom: 14px;
-        }
-
-    /* ── Summary Box ────────────────────────────────────── */
-    .summary-box {
-        background: #f8f6ff;
-        border-radius: 14px;
-        padding: 18px 20px;
-        border: 1px dashed #c5b8f5;
-    }
-
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13px;
-        padding: 6px 0;
-        border-bottom: 1px solid #ede9ff;
-    }
-
-        .summary-row:last-child {
-            border-bottom: none;
-        }
-
-        .summary-row .s-label {
-            color: #888;
-        }
-
-        .summary-row .s-value {
-            font-weight: 700;
-            color: #333;
-        }
-
-    /* ── Search Bar ─────────────────────────────────────── */
-    .search-bar {
-        background: #f8f6ff;
-        border: 1px dashed #c5b8f5;
-        border-radius: 14px;
-        padding: 18px 20px;
-    }
-
-    /* ── Btn ────────────────────────────────────────────── */
-    .btn-update {
-        background: linear-gradient(135deg, #492bc4, #7b54e8);
-        color: #fff;
-        border: none;
-        font-weight: 700;
-        transition: all 0.3s;
-    }
-
-        .btn-update:hover {
-            background: linear-gradient(135deg, #3a1fa8, #6843d0);
-            color: #fff;
-        }
-
-        .btn-update:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-    .alert-info-custom {
-        background: #f0ecff;
-        border-left: 4px solid #492bc4;
-        color: #492bc4;
-        font-size: 13px;
-        border-radius: 8px;
-    }
-
-    /* ── Form Locked State ──────────────────────────────── */
-    .form-locked {
-        opacity: 0.45;
-        pointer-events: none;
-        transition: opacity 0.4s;
-    }
-
-        .form-locked.unlocked {
-            opacity: 1;
-            pointer-events: all;
-        }
-</style>
 
 <div class="container mt-5 px-4">
     <div class="mb-4">
@@ -221,7 +19,7 @@
                             <div class="position-relative flex-grow-1">
                                 <input type="text" class="form-control"
                                        placeholder="Enter Account Number"
-                                       id="searchAccNo" autocomplete="off" />
+                                       id="searchAccNo" autocomplete="off" name="accountNumber" />
                                 <i class="bi bi-credit-card position-absolute top-50 end-0
                                           translate-middle-y text-primary me-1"
                                    style="position:absolute !important;"></i>
@@ -338,14 +136,16 @@
                                 <div class="col-md-6">
                                     <div class="inputbox mt-2">
                                         <div class="position-relative">
-                                            <select asp-for="State"
+                                            <input asp-for="City" type="text" class="form-control"
+                                                   placeholder="City" required />
+                                            @* <select asp-for="State"
                                                     asp-items="@(ViewBag.States as List<SelectListItem>)"
                                                     class="form-control">
                                                 <option value="">--- State ---</option>
                                             </select>
-                                            <i class="bi bi-map"></i>
+                                            <i class="bi bi-map"></i> *@
                                         </div>
-                                        <span asp-validation-for="State" class="text-danger small"></span>
+                                        <span asp-validation-for="City" class="text-danger small"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -478,10 +278,10 @@
                             <span class="s-label">Email</span>
                             <span class="s-value" id="sumEmail" style="font-size:12px;">—</span>
                         </div>
-                        <div class="summary-row">
+                        @* <div class="summary-row">
                             <span class="s-label">State</span>
                             <span class="s-value" id="sumState">—</span>
-                        </div>
+                        </div> *@
                         <div class="summary-row">
                             <span class="s-label">Country</span>
                             <span class="s-value" id="sumCountry">—</span>
@@ -511,7 +311,7 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
+}
     <script>
         $(document).ready(function () {
 
@@ -556,37 +356,46 @@
             });
 
             // ── Populate Form with fetched data ───────────────────────────────
-            function populateForm(res, accNo) {
-                // Hidden field
-                $('#accountNumberHidden').val(accNo);
+                function populateForm(res, accNo) {
+        var data = res.data[0]; // grab the first object
 
-                // Personal
-                $('input[name="Name"]').val(res.holderName);
-                $('input[name="Gender"][value="' + res.gender + '"]').prop('checked', true);
-                $('input[name="FatherName"]').val(res.fatherName);
-                $('input[name="MotherName"]').val(res.motherName);
+        // Hidden field
+        $('#accountNumberHidden').val(accNo);
 
-                // Contact
-                $('input[name="MobileNumber"]').val(res.mobile);
-                $('input[name="Email"]').val(res.email);
+        // Personal
+        $('input[name="Name"]').val(data.name);
+        var genderVal = data.gender;
+        if (genderVal === "M") genderVal = "Male";
+        if (genderVal === "F") genderVal = "Female";
+        if (genderVal === "O") genderVal = "Other";
 
-                // Address
-                $('select[name="State"]').val(res.state);
-                $('select[name="Country"]').val(res.country);
+        $('input[name="Gender"][value="' + genderVal + '"]').prop('checked', true);
+            $('input[name="FatherName"]').val(data.fatherName);
+        $('input[name="MotherName"]').val(data.motherName);
 
-                // Branch & Account Type
-                $('select[name="BranchCode"]').val(res.branchCode);
-                $('#ifscCode').val(res.ifscCode);
-                $('input[name="AccountType"][value="' + res.accountType + '"]').prop('checked', true);
+        // Contact
+        $('input[name="MobileNumber"]').val(data.phoneNo);
+        $('input[name="Email"]').val(data.email);
 
-                // Store original for reset
-                originalData = res;
-                originalData.accNo = accNo;
+        // Address
+        $('select[name="State"]').val(data.state);   // only if you return state
+        $('select[name="Country"]').val(data.country);
+        $('input[name="City"]').val(data.city);
+        // Branch & Account Type
+        $('select[name="BranchCode"]').val(data.branchCode);
+        $('#ifscCode').val(data.ifsccode);
+        $('input[name="AccountType"][value="' + data.accType + '"]').prop('checked', true);
 
-                // Update preview + summary
-                updatePreview(accNo, res);
-                updateSummary();
-            }
+
+        // Store original for reset
+        originalData = data;
+        originalData.accNo = accNo;
+
+        // Update preview + summary
+        updatePreview(accNo, data);
+        updateSummary();
+    }
+
 
             // ── Live Summary Update ───────────────────────────────────────────
             function updateSummary() {
@@ -650,9 +459,7 @@
 
             // ── Reset to original values ──────────────────────────────────────
             $('#resetBtn').on('click', function () {
-                if (originalData && originalData.accNo) {
-                    populateForm(originalData, originalData.accNo);
-                }
+                resetForm();
             });
 
             // ── Bind all inputs for live summary ─────────────────────────────
@@ -662,7 +469,6 @@
             // ── AJAX Form Submit ──────────────────────────────────────────────
             $('#updateForm').on('submit', function (e) {
                 e.preventDefault();
-
                 var btn = $(this).find('button[type="submit"]');
                 btn.prop('disabled', true)
                    .html('<span class="spinner-border spinner-border-sm me-2"></span> Updating...');
@@ -672,7 +478,11 @@
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function (response) {
-                        $('#tgt').html(response);
+                        btn.prop('disabled', false)
+                           .html('<i class="bi bi-pencil-square me-2"></i> Update Account');
+                           resetForm();
+                        alert('Account updated successfully.');
+                        //$('#tgt').html(response);
                     },
                     error: function () {
                         btn.prop('disabled', false)
@@ -684,12 +494,14 @@
 
             // ── Helpers ──────────────────────────────────────────────────────
             function resetForm() {
+
                 $('#editFormCard').removeClass('unlocked');
                 $('#accountNumberHidden').val('');
                 $('#editFormCard input[type!="hidden"]').val('');
                 $('#editFormCard select').prop('selectedIndex', 0);
                 $('#editFormCard input[type="radio"]').prop('checked', false);
                 $('#ifscCode').val('');
+                $('#searchAccNo').val('');
                 originalData = {};
 
                 // Reset preview + summary
@@ -709,4 +521,3 @@
 
         });
     </script>
-}

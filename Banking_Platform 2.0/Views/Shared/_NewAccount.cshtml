@@ -1,6 +1,6 @@
 ﻿@model Banking_Platform_2._0.Models.DTO_Models.NewAccountDTO
 
-<style>
+@* <style>
     .form-control {
         border-bottom: 2px solid #eee !important;
         border: none;
@@ -229,7 +229,7 @@
         border-radius: 8px;
     }
 </style>
-
+ *@
 <div class="container mt-5 px-4">
     <div class="mb-4">
         <h2 class="text-center"><span class="border-bottom">New Account</span></h2>
@@ -273,7 +273,7 @@
                     <div class="col-md-7">
                         <div class="card border-0 shadow-sm rounded-4 p-4">
 
-                          
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="inputbox mt-2">
@@ -300,8 +300,8 @@
                                 </div>
                             </div>
 
-                         
-                           
+
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="inputbox mt-2">
@@ -352,7 +352,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="inputbox mt-2">
@@ -568,84 +568,84 @@
 @* @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial") *@
 
-    <script>
-        $(document).ready(function () {
+<script>
+    $(document).ready(function () {
 
-            // ── Live Summary Update ───────────────────────────────────────────
-            function updateSummary() {
-                var name    = $('input[name="Name"]').val()          || '—';
-                var mobile  = $('input[name="MobileNumber"]').val()  || '—';
-                var email   = $('input[name="Email"]').val()         || '—';
-                var ifsc    = $('#ifscCode').val()                   || '—';
-                var type    = $('input[name="AccountType"]:checked').val() || '—';
-                var gender  = $('input[name="Gender"]:checked').val()      || '—';
-                var deposit = parseFloat($('#initialDeposit').val()) || 0;
-                var branch  = $('#branchSelect option:selected').text();
-                var dob = $('input[name="DateOfBirth"]').val() || '—';
-                if (branch === '--- Select Branch ---') branch = '—';
+        // ── Live Summary Update ───────────────────────────────────────────
+        function updateSummary() {
+            var name    = $('input[name="Name"]').val()          || '—';
+            var mobile  = $('input[name="MobileNumber"]').val()  || '—';
+            var email   = $('input[name="Email"]').val()         || '—';
+            var ifsc    = $('#ifscCode').val()                   || '—';
+            var type    = $('input[name="AccountType"]:checked').val() || '—';
+            var gender  = $('input[name="Gender"]:checked').val()      || '—';
+            var deposit = parseFloat($('#initialDeposit').val()) || 0;
+            var branch  = $('#branchSelect option:selected').text();
+            var dob = $('input[name="DateOfBirth"]').val() || '—';
+            if (branch === '--- Select Branch ---') branch = '—';
 
 
-                // Summary box
-                $('#sumName').text(name);
-                $('#sumDob').text(dob);
-                $('#sumMobile').text(mobile);
-                $('#sumEmail').text(email);
-                $('#sumBranch').text(branch);
-                $('#sumIfsc').text(ifsc);
-                $('#sumType').text(type);
-                $('#sumGender').text(gender);
-                $('#sumDeposit').text(deposit > 0 ? '₹ ' + deposit.toLocaleString('en-IN') : '₹ —');
+            // Summary box
+            $('#sumName').text(name);
+            $('#sumDob').text(dob);
+            $('#sumMobile').text(mobile);
+            $('#sumEmail').text(email);
+            $('#sumBranch').text(branch);
+            $('#sumIfsc').text(ifsc);
+            $('#sumType').text(type);
+            $('#sumGender').text(gender);
+            $('#sumDeposit').text(deposit > 0 ? '₹ ' + deposit.toLocaleString('en-IN') : '₹ —');
 
-                // Preview card
-                $('#previewName').text(name !== '—' ? name : '— —');
-                $('#previewType').text(type);
-                $('#previewBranch').text(branch);
+            // Preview card
+            $('#previewName').text(name !== '—' ? name : '— —');
+            $('#previewType').text(type);
+            $('#previewBranch').text(branch);
 
-                
-            }
 
-                        
-            // ── Bind all inputs for live update ──────────────────────────────
-            $(document).on('input change', 'input, select', updateSummary);
+        }
 
-            // ── Auto-fill IFSC on branch change ──────────────────────────────
-            $('#branchSelect').on('change', function () {
-                var branchId = $(this).val();
-                //alert(branchId);
-                if (branchId) {
-                    $.ajax({
-                        url: '@Url.Action("get-ifsc", "Admin")',
-                        type: 'GET',
-                        data: { branchId: branchId },
-                        success: function (res) {
-                            $('#ifscCode').val(res.ifsc);
-                            $('#sumIfsc').text(res.ifsc);
-                            updateSummary();
-                        },
-                        error: function () {
-                            alert('Error retrieving IFSC code.');
-                        }
-                    });
-                } else {
-                    $('#ifscCode').val('');
-                    updateSummary();
-                }
-            });
 
-            // ── AJAX Form Submit ──────────────────────────────────────────────
-           $('#newAccountForm').on('submit', function (e) {
-                e.preventDefault();
+        // ── Bind all inputs for live update ──────────────────────────────
+        $(document).on('input change', 'input, select', updateSummary);
 
+        // ── Auto-fill IFSC on branch change ──────────────────────────────
+        $('#branchSelect').on('change', function () {
+            var branchId = $(this).val();
+            //alert(branchId);
+            if (branchId) {
                 $.ajax({
-                url: '@Url.Action("create-account", "Admin")',
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function (response) {
-                    $('#tgt').html(response);
-                }
-             });
-         });
-
+                    url: '@Url.Action("get-ifsc", "Admin")',
+                    type: 'GET',
+                    data: { branchId: branchId },
+                    success: function (res) {
+                        $('#ifscCode').val(res.ifsc);
+                        $('#sumIfsc').text(res.ifsc);
+                        updateSummary();
+                    },
+                    error: function () {
+                        alert('Error retrieving IFSC code.');
+                    }
+                });
+            } else {
+                $('#ifscCode').val('');
+                updateSummary();
+            }
         });
-    </script>
+
+        // ── AJAX Form Submit ──────────────────────────────────────────────
+       $('#newAccountForm').on('submit', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+            url: '@Url.Action("create-account", "Admin")',
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function (response) {
+                $('#tgt').html(response);
+            }
+         });
+     });
+
+    });
+</script>
 @* } *@
