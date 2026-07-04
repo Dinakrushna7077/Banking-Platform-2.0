@@ -1,4 +1,5 @@
-﻿using Banking_Platform_2._0.Models;
+﻿using AspNetCoreGeneratedDocument;
+using Banking_Platform_2._0.Models;
 using Banking_Platform_2._0.Models.DTO_Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -57,13 +58,38 @@ namespace Banking_Platform_2._0.Controllers
         [HttpGet("withdraw")]
         public IActionResult Withdraw()
         {
-            WithdrwalDTO tr = new WithdrwalDTO();
-            return PartialView("_Withdraw", tr);
+            WithdrwalDTO wd = new WithdrwalDTO();
+            return PartialView("_Withdraw", wd);
         }
-        [HttpPost("withdraw")]
-        public IActionResult Withdraw(Transaction tr)
+        [HttpPost("withdraw-money")]
+        public IActionResult Withdraw(WithdrwalDTO wd)
         {
-            return PartialView("_Withdraw", tr);
+            try
+            {
+                var account = db.AccountMsts.FirstOrDefault(a => a.AccountNo == wd.WidtdrawAccountNo);
+                if (account == null)
+                {
+                    return NotFound(new { message = "Account not found" });
+                }
+                if(account.Balance>wd.Amount&&wd.Amount>0)
+                {
+                    var transaction = new Transaction
+                    {
+                        FromAcId = account.AccId,
+                        Amount = wd.Amount,
+                        Type =wd.WithdrawMode,
+                        Timestamp = DateTime.Now
+                    };
+                    db.Transactions.Add(transaction);
+                    account.Balance -= wd.Amount;
+                    db.SaveChanges();
+                }
+                return Ok(new { message = "Deposit of ₹" + wd.Amount + " was successful!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred: " + ex.Message });
+            }
         }
         [HttpGet("transfer")]
         public IActionResult Transfer()
@@ -238,6 +264,41 @@ namespace Banking_Platform_2._0.Controllers
             ViewBag.Branch = GetBranch();
             ac = null;
             return StatusCode(200);
+        }
+        [HttpGet("verify-withdraw-acc")]
+        public IActionResult WithdrawAccount(long accountNumber)
+        {
+            var details = (from c in db.Customers
+                           join a in db.AccountMsts on c.AccId equals a.AccId
+                           join u in db.Users on c.AccId equals u.AccId
+                           join b in db.Branches on a.BranchId equals b.BranchId
+                           where a.AccountNo == accountNumber
+                           select new
+                           {
+                               a.AccountNo,
+                               c.Name,
+                               c.Gender,
+                               c.PhoneNo,
+                               u.Email,
+                               c.FatherName,
+                               c.MotherName,
+                               c.Address,
+                               c.City,
+                               c.Country,
+                               b.BranchName,
+                               b.BranchCode,
+                               b.Ifsccode,
+                               a.AccType,
+                               isActive = a.Status
+                           }).ToList();
+
+
+            if (details.Count() > 0)
+            {
+                return Ok(details);
+            }
+            return NotFound( new { message = "Account not found." });
+
         }
         public IActionResult GetAccountDetails(long accountNumber)
         {

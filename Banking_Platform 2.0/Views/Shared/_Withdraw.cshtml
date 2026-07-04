@@ -110,7 +110,7 @@
 
                 <!-- Left: Form -->
                 <div class="col-md-7">
-                    <form id="withdrawForm" asp-controller="Admin" asp-action="Withdraw" method="post">
+                    <form id="withdrawForm" asp-controller="Admin" asp-action="withdraw-money" method="post">
                         @Html.AntiForgeryToken()
                         <div class="card p-4 shadow-sm">
 
@@ -132,7 +132,7 @@
                                 <div class="position-relative">
                                     <input asp-for="AccountHolderName" class="form-control"
                                            placeholder="Auto-filled on verify"
-                                           readonly id="accountHolderName" />
+                                           readonly id="accHolderName" />
                                     <i class="bi bi-person"></i>
                                 </div>
                             </div>
@@ -153,12 +153,12 @@
                                 <p class="section-label">Withdraw Mode</p>
                                 <div class="d-flex gap-4">
                                     <div>
-                                        <input asp-for="WithdrawMode" type="radio" value="Cash" id="cash" class="point" />
+                                        <input asp-for="WithdrawMode" type="radio" value="Withdrawal" id="cash" class="point" />
                                         <label class="point" for="cash">Cash</label>
                                     </div>
                                     <div>
-                                        <input asp-for="WithdrawMode" type="radio" value="Cheque" id="cheque" class="point" />
-                                        <label class="point" for="cheque">Cheque</label>
+                                        <input asp-for="WithdrawMode" type="radio" value="Transfer" id="cheque" class="point" />
+                                        <label class="point" for="cheque">Transfer</label>
                                     </div>
                                     @* <div>
                                         <input asp-for="WithdrawMode" type="radio" value="Online" id="online" class="point" />
@@ -190,10 +190,10 @@
 
                             <!-- Submit -->
                             <div class="mt-3 mb-2">
-                                @* <button type="button" class="btn btn-outline-secondary w-100 mb-2 fw-bold"
+                                <button type="button" class="btn btn-outline-secondary w-100 mb-2 fw-bold"
                                         id="verifyBtn">
                                     <i class="bi bi-search me-1"></i> Verify Account
-                                </button> *@
+                                </button>
                                 <button type="submit" class="btn btn-withdraw w-100 fw-bolder"
                                         id="submitBtn" disabled>
                                     <i class="bi bi-arrow-down-circle me-1"></i> Withdraw
@@ -266,120 +266,164 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
-    <script>
-        $(document).ready(function () {
-
-            let verifiedBalance = 0;
-
-            // Show/hide cheque number field
-            $('input[name="WithdrawMode"]').on('change', function () {
-                if ($(this).val() === 'Cheque') {
-                    $('#chequeSection').removeClass('d-none');
-                    $('#chequeNumber').attr('required', true);
-                } else {
-                    $('#chequeSection').addClass('d-none');
-                    $('#chequeNumber').removeAttr('required').val('');
-                }
-            });
-
-            // Verify account
-            $('#verifyBtn').on('click', function () {
-                var accNo = $('#accountNumber').val().trim();
-                if (!accNo) {
-                    alert('Please enter an account number.');
-                    return;
-                }
-
-                $.ajax({
-                    url: '@Url.Action("GetAccountDetails", "Admin")',
-                    type: 'GET',
-                    data: { accountNumber: accNo },
-                    success: function (res) {
-                        if (res && res.success) {
-                            verifiedBalance = res.balance;
-
-                            // Fill form field
-                            $('#accountHolderName').val(res.holderName);
-
-                            // Update preview card
-                            $('#previewName').text(res.holderName);
-                            $('#previewAccNo').text(accNo);
-                            $('#previewBalance').text('₹ ' + res.balance.toLocaleString('en-IN'));
-                            $('#previewType').text(res.accountType);
-
-                            // Enable submit
-                            $('#submitBtn').prop('disabled', false);
-
-                            // Show summary card
-                            $('#summaryCard').removeClass('d-none');
-                            updateSummary();
-                        } else {
-                            alert(res.message || 'Account not found.');
-                            resetPreview();
-                        }
-                    },
-                    error: function () {
-                        alert('Error verifying account. Please try again.');
-                        resetPreview();
-                    }
-                });
-            });
-
-            // Live transaction summary update
-            $('#withdrawAmount').on('input', function () {
-                updateSummary();
-            });
-
-            function updateSummary() {
-                var amount = parseFloat($('#withdrawAmount').val()) || 0;
-                var remaining = verifiedBalance - amount;
-                $('#summaryAmount').text('₹ ' + amount.toLocaleString('en-IN'));
-                $('#summaryBalance').text('₹ ' + verifiedBalance.toLocaleString('en-IN'));
-                $('#summaryRemaining').text('₹ ' + remaining.toLocaleString('en-IN'));
-
-                if (remaining < 0) {
-                    $('#summaryRemaining').removeClass('text-success').addClass('text-danger');
-                } else {
-                    $('#summaryRemaining').removeClass('text-danger').addClass('text-success');
-                }
-            }
-
-            function resetPreview() {
-                verifiedBalance = 0;
-                $('#accountHolderName').val('');
-                $('#previewName').text('— —');
-                $('#previewAccNo').text('•••• •••• ••••');
-                $('#previewBalance').text('₹ —');
-                $('#previewType').text('—');
-                $('#submitBtn').prop('disabled', true);
-                $('#summaryCard').addClass('d-none');
-            }
-
-            // AJAX form submit → partial replace into #tgt
-            $('#withdrawForm').on('submit', function (e) {
-                e.preventDefault();
-
-                // Guard: insufficient balance
-                var amount = parseFloat($('#withdrawAmount').val()) || 0;
-                if (verifiedBalance > 0 && amount > verifiedBalance) {
-                    alert('Insufficient balance.');
-                    return;
-                }
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    success: function (response) {
-                        $('#tgt').html(response);
-                    },
-                    error: function () {
-                        alert('Withdrawal failed. Please try again.');
-                    }
-                });
-            });
-
-        });
-    </script>
 }
+    <script>
+            var verifiedBalance = 0;
+    $(document).ready(function () {
+
+        // ── Toggle Cheque Number Field Visibility ──
+        $('input[name="WithdrawMode"]').on('change', function () {
+            if ($(this).val() === 'Cheque') {
+                $('#chequeSection').removeClass('d-none');
+                $('#chequeNumber').attr('required', true);
+            } else {
+                $('#chequeSection').addClass('d-none');
+                $('#chequeNumber').removeAttr('required').val('');
+            }
+        });
+
+        // ── Verify Account ──
+        $('#verifyBtn').on('click', function () {
+            var accNo = $('#accountNumber').val().trim();
+            if (!accNo) { alert('Please enter an account number.'); return; }
+
+            var btn = $(this);
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Verifying...');
+
+            $.ajax({
+                url: '@Url.Action("verify-account", "Admin")', // Keeps your clean flat verification action method
+                type: 'GET',
+                data: { accountNumber: accNo },
+                dataType: 'json',
+                success: function (res) {
+                    btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
+
+                    console.log(res.name);
+                    verifiedBalance = res.balance;
+
+                    // Fill target layout inputs
+                    $('#accHolderName').val(res.name);
+                    $('#availableBalance').val('₹ ' + formatAmount(res.balance));
+
+                    // Update premium preview card details
+                    $('#previewAccNo').text(formatAccNo(res.accountNo));
+                    $('#previewName').text(res.name);
+                    $('#previewType').text(res.accType);
+                    $('#previewBalance').text('₹ ' + formatAmount(res.balance));
+
+                    // Update transaction summary card
+                    $('#sumCurrent').text('₹ ' + formatAmount(res.balance));
+                    updateSummary();
+
+                    // Enable layout execution action button
+                    $('#submitBtn').prop('disabled', false);
+                },
+                error: function () {
+                    btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
+                    alert('Error verifying account. Please try again.');
+                    resetAll();
+                }
+            });
+        });
+
+        // Allow Enter key shortcuts on the account query element
+        $('#accountNumber').on('keypress', function (e) {
+            if (e.which === 13) { e.preventDefault(); $('#verifyBtn').trigger('click'); }
+        });
+
+        // ── Live Transaction Summary Computation ──
+        $('#withdrawAmount').on('input', updateSummary);
+
+        function updateSummary() {
+            var amount = parseFloat($('#withdrawAmount').val()) || 0;
+            var after = verifiedBalance - amount; // Subtracts for withdrawal operations
+
+            $('#sumDeposit').text('₹ ' + formatAmount(amount)); // Shows current entry value
+            $('#sumAfter').text('₹ ' + formatAmount(after));
+
+            // Dynamically style textual balance warning if account dips under zero
+            if (after < 0) {
+                $('#sumAfter').removeClass('text-success').addClass('text-danger');
+            } else {
+                $('#sumAfter').removeClass('text-danger').addClass('text-success');
+            }
+        }
+
+        // ── AJAX Form Submission Execution ──
+        $('#withdrawForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var amount = parseFloat($('#withdrawAmount').val()) || 0;
+            if (amount <= 0) { alert('Enter a valid withdrawal amount.'); return; }
+
+            // Front-end Guard: Stop execution immediately on insufficient funds
+            if (amount > verifiedBalance) {
+                alert('Insufficient balance available in this account.');
+                return;
+            }
+
+            var submitBtn = $('#submitBtn');
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Processing...');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (response) {
+                    submitBtn.prop('disabled', false).html('<i class="bi bi-arrow-down-circle me-1"></i> Withdraw');
+
+                    alert(response.message);
+
+                    // Reset standard elements
+                    $('#accountNumber').val('');
+                    $('#withdrawAmount').val('');
+                    resetAll();
+                },
+                error: function (xhr) {
+                    submitBtn.prop('disabled', false).html('<i class="bi bi-arrow-down-circle me-1"></i> Withdraw');
+
+                    var errorMsg = "Withdrawal failed. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+
+                    alert('Error: ' + errorMsg);
+                }
+            });
+        });
+
+        // ── UI Wiping States Engine ──
+        function resetAll() {
+            verifiedBalance = 0;
+            $('#accHolderName').val('');
+            $('#chequeNumber').val('');
+            $('#availableBalance').val('');
+
+            // Hide elements if default mode is reset
+            $('#chequeSection').addClass('d-none');
+            $('input[name="WithdrawMode"][value="Cash"]').prop('checked', true);
+
+            $('#cardAccNo').text('•••• •••• ••••');
+            $('#cardName').text('— —');
+            $('#cardType').text('—');
+            $('#cardBalance').text('₹ —');
+            $('#sumCurrent').text('₹ —');
+            $('#sumDeposit').text('₹ 0.00');
+            $('#sumAfter').text('₹ —');
+            $('#submitBtn').prop('disabled', true);
+        }
+
+        function formatAccNo(accNo) {
+            return String(accNo).replace(/(.{4})/g, '$1 ').trim();
+        }
+
+        function formatAmount(amount) {
+            return parseFloat(amount).toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+    });
+    </script>
