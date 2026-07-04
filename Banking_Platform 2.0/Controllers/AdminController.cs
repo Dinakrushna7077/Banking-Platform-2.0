@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Principal;
+using System.Threading.Tasks;
 
 namespace Banking_Platform_2._0.Controllers
 {
@@ -258,76 +259,79 @@ namespace Banking_Platform_2._0.Controllers
             return PartialView("_BalanceInquary");
         }
         [HttpPost("balance-check")]
-        public IActionResult Balance_Inquary(long accountNumber,string secondary)
+        public async Task<IActionResult> Balance_Inquary(long accountNumber, string secondary)
         {
-            //return PartialView("_Balance_Inquary", tr);
-            /*var accDetails = (
-                from a in db.AccountMsts
-                join c in db.Customers on a.AccId equals c.AccId
-                join b in db.Branches on a.BranchId equals b.BranchId
-                join u in db.Users on a.AccId equals u.AccId into userGroup
-                from u in userGroup.DefaultIfEmpty()
-                where a.AccountNo == accountNumber
-                select new CheckBalanceDTO
-                {
-                    AccNo = a.AccountNo,
-                    CustomerName = c.Name,
-                    Mobile = Convert.ToInt64(u.PhoneNo),
-                    AccType = a.AccType,
-                    Balance = Convert.ToDecimal(a.Balance),
-                    CreatedDt = Convert.ToDateTime(a.CreatedDt),
-                    BranchName = b.BranchName,
-                    IFSCCode = b.Ifsccode,
-                    Status = a.Status == true ? "Active" : "Closed"
-                }
-            ).ToListAsync();*/
-            //-------------
-            var summary = db.Transactions
-               .Where(t => t.FromAcId == accountNumber)
-               .GroupBy(t => 1)
-               .Select(g => new
-               {
-                   Deposit = g.Sum(t => t.Type == "Deposit" ? t.Amount : 0),
-                   Withdraw = g.Sum(t => t.Type == "Withdrawal" ? t.Amount : 0), // ✅ fix
-                   TransactionCount = g.Count()
-               })
-               .FirstOrDefaultAsync();
+            try
+            {
+                var accDetails =await (
+                    from a in db.AccountMsts
+                    join c in db.Customers on a.AccId equals c.AccId
+                    join b in db.Branches on a.BranchId equals b.BranchId
+                    join u in db.Users on a.AccId equals u.AccId into userGroup
+                    from u in userGroup.DefaultIfEmpty()
+                    where a.AccountNo == accountNumber
+                    select new CheckBalanceDTO
+                    {
+                        AccNo = a.AccountNo,
+                        CustomerName = c.Name,
+                        Mobile = Convert.ToInt64(u.PhoneNo),
+                        AccType = a.AccType,
+                        Balance = Convert.ToDecimal(a.Balance),
+                        CreatedDt = a.CreatedDt.ToDateTime(TimeOnly.MinValue),
+                        BranchName = b.BranchName,
+                        IFSCCode = b.Ifsccode,
+                        Status = a.Status == true ? "Active" : "Closed"
+                    }
+                ).FirstOrDefaultAsync();
+                var summary = await db.Transactions
+                   .Where(t => t.FromAcId == accountNumber)
+                   .GroupBy(t => 1)
+                   .Select(g => new
+                   {
+                       Deposit = g.Sum(t => t.Type == "Deposit" ? t.Amount : 0),
+                       Withdraw = g.Sum(t => t.Type == "Withdrawal" ? t.Amount : 0), 
+                       TransactionCount = g.Count()
+                   })
+                   .FirstOrDefaultAsync();
 
-            /*var lastTransaction = db.Transactions
-                .Where(t => t.FromAcId == accountNumber).Select(x=>new LastTransactionDTO
-                {
-                    FromAcId = x.FromAcId,
-                    ToAcId = x.ToAcId,
-                    Amount = x.Amount,
-                    Type = x.Type,
-                    Timestamp = x.Timestamp
+                var lastTransaction = await db.Transactions
+                    .Where(t => t.FromAcId == accountNumber).Select(x => new LastTransactionDTO
+                    {
+                        FromAcId = x.FromAcId,
+                        ToAcId = x.ToAcId,
+                        Amount = x.Amount,
+                        Type = x.Type,
+                        Timestamp = x.Timestamp
 
-                })
-                .OrderByDescending(t => t.Timestamp)
-                .FirstOrDefault();*/
+                    })
+                    .OrderByDescending(t => t.Timestamp).Take(5)
+                    .ToListAsync();
 
-            return Json(new
+                return Json(new
                 {
                     success = true,
-                    accountNumber = "123456789012",//done
-                    holderName = "John Doe",//done
-                    accountType = "Saving",//done
-                    balance = 25000.00,//done
-                    branchName = "Main Branch",//done
-                    ifscCode = "BANK0001234",//done
-                    status = "Active",//done
-                    openingDate = "01 Jan 2022",//done
-                    mobile = "98XXXXXX01",
-                    totalCredits = summary.Result?.Withdraw ?? 0,
-                    totalDebits = summary.Result?.Deposit ?? 0,//done
-                    totalTransactions = 42,//done
-                    lastTransactionDate = "10 Mar 2026",//done
+                    accountNumber = accDetails?.AccNo,
+                    holderName = accDetails?.CustomerName,
+                    accountType = accDetails?.AccType,
+                    balance = accDetails?.Balance ?? 0,
+                    branchName = accDetails?.BranchName,
+                    ifscCode = accDetails?.IFSCCode,
+                    status = accDetails?.Status,
+                    openingDate = accDetails?.CreatedDt.ToString("dd MMM yyyy"),
+                    mobile = accDetails?.Mobile,
+                    totalCredits = summary?.Withdraw ?? 0,
+                    totalDebits = summary?.Deposit ?? 0,
+                    totalTransactions = summary?.TransactionCount ?? 0,
+                    lastTransactionDate = lastTransaction?.FirstOrDefault()?.Timestamp,
                     recentTransactions = new[] {
-                    new { date = "10 Mar", description = "UPI Transfer", type = "Credit", amount = 5000 },
-                    // ...
+                    new { date = lastTransaction},
                     }
                 });
-           
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error : " + ex.Message, error = ex.Message });
+            }
         }
 
         private List<SelectListItem> GetStates()

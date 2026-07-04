@@ -471,7 +471,8 @@
                             alert(res.message || 'Account not found.');
                         }
                     },
-                    error: function () {
+                    error: function (err) {
+                        console.log(err);
                         btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Check Balance');
                         alert('Error fetching account details. Please try again.');
                     }
@@ -540,7 +541,7 @@
 
             function formatAccNo(accNo) {
                 // Format as groups of 4: 1234 5678 9012
-                return accNo.replace(/(.{4})/g, '$1 ').trim();
+                return String(accNo).replace(/(.{4})/g, '$1 ').trim();
             }
 
             function formatAmount(amount) {
