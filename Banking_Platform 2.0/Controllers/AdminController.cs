@@ -21,16 +21,38 @@ namespace Banking_Platform_2._0.Controllers
         {
             return View();
         }
-        [HttpGet("deposite")]
+        [HttpGet("deposit-money")]
         public IActionResult Deposit()
         {
             DepositeDTO tr = new DepositeDTO();
             return PartialView("_Deposite", tr);
         }
-        [HttpPost("deposite")]
-        public IActionResult Deposit(Transaction tr)
+        [HttpPost("deposit-money")]
+        public IActionResult Deposit(DepositeDTO depo)
         {
-            return PartialView("_Deposit");
+            try
+            {
+                var account = db.AccountMsts.FirstOrDefault(a => a.AccountNo == depo.DepositeAccount);
+                if(account == null)
+                {
+                    return NotFound(new { message = "Account not found" });
+                }
+                var transaction = new Transaction
+                {
+                    ToAcId = account.AccId,
+                    Amount = depo.Amount,
+                    Type = "Deposit",
+                    Timestamp = DateTime.Now
+                };
+                db.Transactions.Add(transaction);
+                account.Balance += depo.Amount;
+                db.SaveChanges();
+                return Ok(new { message = "Deposit of ₹" + depo.Amount + " was successful!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred: " + ex.Message });
+            }
         }
         [HttpGet("withdraw")]
         public IActionResult Withdraw()
@@ -166,7 +188,6 @@ namespace Banking_Platform_2._0.Controllers
         [HttpGet("get-ifsc")]
         public JsonResult GetIfscByBranchId(string branchId)
         {
-            // Example: lookup from DB
             var ifscCode = db.Branches
                 .Where(b => b.BranchCode == branchId)
                 .Select(b => b.Ifsccode)
@@ -250,6 +271,29 @@ namespace Banking_Platform_2._0.Controllers
                 return Json(new { success = true, data = details });
             }
             return Json(new { success = false, message = "Account not found." });
+
+        }
+        [HttpGet("verify-account")]
+        public IActionResult VerifyAccount(long accountNumber)
+        {
+            var details = (from c in db.Customers
+                          join a in db.AccountMsts on c.AccId equals a.AccId
+                          where a.AccountNo == accountNumber
+                          select new
+                          {
+                              a.AccountNo,
+                              a.Balance,
+                              c.Name,
+                              a.AccType,
+                              isActive=a.Status
+                          }).FirstOrDefault();
+
+
+            if (details != null)
+            {
+                return Ok(details );
+            }
+            return NotFound(new { success = false, message = "Account not found." });
 
         }
 

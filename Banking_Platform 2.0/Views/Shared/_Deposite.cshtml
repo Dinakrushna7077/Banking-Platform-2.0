@@ -46,7 +46,8 @@
     }
 
     .inputbox input:focus ~ span,
-    .inputbox input:valid ~ span {
+    .inputbox input:valid ~ span,
+    .inputbox input:not(:placeholder-shown) ~ span {
         transform: translateY(-15px);
         font-size: 11px;
         color: #3F51B5;
@@ -185,7 +186,7 @@
     <div class="row justify-content-center">
         <div class="col-md-11">
 
-            <form id="depositForm" asp-controller="Admin" asp-action="Deposit" method="post">
+            <form id="depositForm" asp-controller="Admin" asp-action="deposit-money" method="post">
                 @Html.AntiForgeryToken()
 
                 <div class="row g-4">
@@ -213,8 +214,8 @@
                                     <div class="inputbox">
                                         <div class="position-relative">
                                             <input asp-for="AccountHolderName" class="form-control"
-                                                   placeholder="Account Holder Name"
-                                                   id="accountHolderName" readonly />
+                                                   placeholder="Account Holder Name" readonly="true"
+                                                   id="accHolderName"  />
                                             <i class="bi bi-person"></i>
                                         </div>
                                     </div>
@@ -227,7 +228,7 @@
                                         <div class="position-relative">
                                             <input asp-for="AvailableBalance" class="form-control"
                                                    placeholder="Available Balance"
-                                                   id="availableBalance" readonly />
+                                                   id="availableBalance" readonly="true" />
                                             <i class="bi bi-wallet2"></i>
                                         </div>
                                     </div>
@@ -235,7 +236,7 @@
                                 <div class="col-md-6">
                                     <div class="inputbox">
                                         <div class="position-relative">
-                                            <input asp-for="DepositedBy" class="form-control"
+                                            <input asp-for="DepositedBy" class="form-control" id="depositBy"
                                                    placeholder="Depositor Name" required />
                                             <i class="bi bi-person-badge"></i>
                                         </div>
@@ -260,7 +261,7 @@
                                     <div class="inputbox">
                                         <div class="position-relative">
                                             <input asp-for="Remark" class="form-control"
-                                                   placeholder="Remark (Optional)" />
+                                                   placeholder="Remark (Optional)" id="remark"/>
                                             <i class="bi bi-chat-left-text"></i>
                                         </div>
                                     </div>
@@ -270,10 +271,10 @@
                              
                             <!-- Submit -->
                             <div class="mt-2">
-                                @* <button type="button" class="btn btn-outline-secondary w-100 mb-2 fw-bold"
+                                <button type="button" class="btn btn-outline-secondary w-100 mb-2 fw-bold"
                                         id="verifyBtn">
                                     <i class="bi bi-search me-1"></i> Verify Account
-                                </button> *@
+                                </button>
                                 <button type="submit" class="btn btn-deposit w-100 py-2 fw-bolder"
                                         id="submitBtn" disabled>
                                     <i class="bi bi-arrow-up-circle me-1"></i> Deposit
@@ -339,64 +340,56 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
+}
     <script>
+        var verifiedBalance=0;
         $(document).ready(function () {
+    $('#verifyBtn').on('click', function () {
+        var accNo = $('#accountNumber').val().trim();
+        if (!accNo) { alert('Please enter an account number.'); return; }
+        
+        var btn = $(this);
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Verifying...');
 
-            let verifiedBalance = 0;
+        $.ajax({
+            url: '@Url.Action("verify-account", "Admin")',
+            type: 'GET',
+            data: { accountNumber: accNo },
+            dataType: 'json', 
+            success: function (res) {
+                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
+                    console.log(res.name);
+                    verifiedBalance=res.balance;
+                    $('#accHolderName').val(res.name);
+                    $('#availableBalance').val('₹ ' + formatAmount(res.balance));
 
-            // ── Verify Account ───────────────────────────────────────────────────
-            $('#verifyBtn').on('click', function () {
-                var accNo = $('#accountNumber').val().trim();
-                if (!accNo) { alert('Please enter an account number.'); return; }
+                    // 2. Update preview card layout with formatting
+                    $('#cardAccNo').text(formatAccNo(res.accountNo));
+                    $('#cardName').text(res.name);
+                    $('#cardType').text(res.accType);
+                    $('#cardBalance').text('₹ ' + formatAmount(res.balance));
 
-                var btn = $(this);
-                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Verifying...');
+                    // 3. Update summary pane
+                    $('#sumCurrent').text('₹ ' + formatAmount(res.balance));
+                    updateSummary();
 
-                $.ajax({
-                    url: '@Url.Action("GetAccountDetails", "Admin")',
-                    type: 'GET',
-                    data: { accountNumber: accNo },
-                    success: function (res) {
-                        btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
-
-                        if (res && res.success) {
-                            verifiedBalance = res.balance;
-
-                            // Fill readonly fields
-                            $('#accountHolderName').val(res.holderName);
-                            $('#availableBalance').val('₹ ' + formatAmount(res.balance));
-
-                            // Update preview card
-                            $('#cardAccNo').text(formatAccNo(accNo));
-                            $('#cardName').text(res.holderName);
-                            $('#cardType').text(res.accountType);
-                            $('#cardBalance').text('₹ ' + formatAmount(res.balance));
-
-                            // Update summary
-                            $('#sumCurrent').text('₹ ' + formatAmount(res.balance));
-                            updateSummary();
-
-                            $('#submitBtn').prop('disabled', false);
-                        } else {
-                            alert(res.message || 'Account not found.');
-                            resetAll();
-                        }
-                    },
-                    error: function () {
-                        btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
-                        alert('Error verifying account. Please try again.');
-                        resetAll();
-                    }
-                });
-            });
+                    // 4. Enable deposit execution button
+                    $('#submitBtn').prop('disabled', false);
+            },
+            error: function () {
+                btn.prop('disabled', false).html('<i class="bi bi-search me-1"></i> Verify Account');
+                alert('Error verifying account. Please try again.');
+                resetAll();
+            }
+        });
+    });
 
             // Allow Enter key on account number field
             $('#accountNumber').on('keypress', function (e) {
                 if (e.which === 13) { e.preventDefault(); $('#verifyBtn').trigger('click'); }
             });
 
-            // ── Live Summary ─────────────────────────────────────────────────────
+            // ── Live Summary ──
             $('#depositAmount').on('input', updateSummary);
 
             function updateSummary() {
@@ -406,30 +399,50 @@
                 $('#sumAfter').text('₹ ' + formatAmount(after));
             }
 
-            // ── AJAX Form Submit ─────────────────────────────────────────────────
-            $('#depositForm').on('submit', function (e) {
-                e.preventDefault();
+            // Form Submit
+        $('#depositForm').on('submit', function (e) {
+        e.preventDefault();
 
-                var amount = parseFloat($('#depositAmount').val()) || 0;
-                if (amount <= 0) { alert('Enter a valid deposit amount.'); return; }
+        var amount = parseFloat($('#depositAmount').val()) || 0;
+        if (amount <= 0) { alert('Enter a valid deposit amount.'); return; }
 
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    success: function (response) {
-                        $('#tgt').html(response);
-                    },
-                    error: function () {
-                        alert('Deposit failed. Please try again.');
-                    }
-                });
-            });
+        var submitBtn = $('#submitBtn');
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Processing...');
 
-            // ── Helpers ──────────────────────────────────────────────────────────
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json', // Expect JSON back from the server
+            success: function (response) {
+                // Re-enable and restore button styles
+                submitBtn.prop('disabled', false).html('<i class="bi bi-arrow-up-circle me-1"></i> Deposit');
+
+                // Alert user of clear success message
+                alert(response.message);
+
+                // Reset the form fields, clear the layout cards, and empty target fields
+                $('#accountNumber').val(''); // Wipes out manually typed Account ID
+                $('#depositAmount').val('');  // Wipes deposit value line
+                resetAll();                  // Fires helper to wipe preview state engine
+            },
+            error: function (xhr) {
+                submitBtn.prop('disabled', false).html('<i class="bi bi-arrow-up-circle me-1"></i> Deposit');
+
+                var errorMsg = "Deposit failed. Please try again.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+
+                alert('Error: ' + errorMsg);
+            }
+        });
+    });
             function resetAll() {
                 verifiedBalance = 0;
-                $('#accountHolderName').val('');
+                $('#accHolderName').val('');
+                $('#depositBy').val('');
+                $('#remark').val('');
                 $('#availableBalance').val('');
                 $('#cardAccNo').text('•••• •••• ••••');
                 $('#cardName').text('— —');
@@ -442,7 +455,7 @@
             }
 
             function formatAccNo(accNo) {
-                return accNo.replace(/(.{4})/g, '$1 ').trim();
+                return String(accNo).replace(/(.{4})/g, '$1 ').trim();
             }
 
             function formatAmount(amount) {
@@ -454,4 +467,3 @@
 
         });
     </script>
-}
