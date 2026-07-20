@@ -4,6 +4,7 @@ using Banking_Platform_2._0.Models.DTO_Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -77,14 +78,14 @@ namespace Banking_Platform_2._0.Controllers
                     {
                         FromAcId = account.AccId,
                         Amount = wd.Amount,
-                        Type =wd.WithdrawMode,
+                        Type = "Withdrawal",
                         Timestamp = DateTime.Now
                     };
                     db.Transactions.Add(transaction);
                     account.Balance -= wd.Amount;
                     db.SaveChanges();
                 }
-                return Ok(new { message = "Deposit of ₹" + wd.Amount + " was successful!" });
+                return Ok(new { message = "Withdraw of ₹" + wd.Amount + " was successful!" });
             }
             catch (Exception ex)
             {
@@ -98,9 +99,37 @@ namespace Banking_Platform_2._0.Controllers
             return PartialView("_Transaction", tr);
         }
         [HttpPost("transfer")]
-        public IActionResult Transfer(Transaction tr)
+        public IActionResult Transfer(TransactionDTO tr)
         {
-            return PartialView("_Transaction", tr);
+            try
+            {
+                Transaction newTrans = new Transaction()
+                {
+                    FromAcId = tr.FromAcId,
+                    ToAcId = tr.ToAcId,
+                    Amount = tr.Amount,
+                    Type = tr.TransferMode,
+                    Timestamp = DateTime.Now
+                };
+
+                var subSender = db.AccountMsts.Where(a => a.AccId == tr.FromAcId).FirstOrDefault();
+                var addReceiver = db.AccountMsts.Where(a => a.AccId == tr.ToAcId).FirstOrDefault();
+                if (subSender.Balance > tr.Amount)
+                {
+                    subSender.Balance -= tr.Amount;
+                    addReceiver.Balance += tr.Amount;
+                }
+
+                db.Transactions.Add(newTrans);
+
+                db.SaveChanges();
+
+                return PartialView("_Transaction", tr);
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, message = "Error : " + ex.Message, error = ex.Message });
+            }
         }
         [HttpGet("create-account")]
         public IActionResult New_Account()
@@ -299,6 +328,62 @@ namespace Banking_Platform_2._0.Controllers
             }
             return NotFound( new { message = "Account not found." });
 
+        }
+        [HttpGet("verify-transaction-account")]
+        public IActionResult VerifySenderAccount([FromQuery] long fromAcc, [FromQuery] long toAcc)
+        {
+            try
+            {
+                var targetAccounts = new[] { fromAcc, toAcc };
+
+                var accounts = (from a in db.AccountMsts
+                                join c in db.Customers on a.AccId equals c.AccId
+                                where targetAccounts.Contains(a.AccountNo)
+                                select new
+                                {
+                                    AccountNo = a.AccountNo,
+                                    AccId = a.AccId,
+                                    Name = c.Name,
+                                    Balance = a.Balance,
+                                    AccType=a.AccType
+                                }).ToList();
+
+                var senderData = accounts.FirstOrDefault(a => a.AccountNo == fromAcc);
+                var receiverData = accounts.FirstOrDefault(a => a.AccountNo == toAcc);
+
+                if (senderData == null || receiverData == null)
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = senderData == null ? "Sender account not found." : "Receiver account not found."
+                    });
+                }
+
+                var response = new
+                {
+                    sender = new
+                    {
+                        FromAccNo = senderData.AccountNo,
+                        FromAccid = senderData.AccId,
+                        FromName = senderData.Name,
+                        AvailableBalance = senderData.Balance
+                    },
+                    receiver = new
+                    {
+                        ToAccNo = receiverData.AccountNo,
+                        ToAccid = receiverData.AccId,
+                        ToName = receiverData.Name,
+                        ToAccType=receiverData.AccType
+                    }
+                };
+
+                return Ok(new { success = true, data = response });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "An error occurred while verifying accounts." });
+            }
         }
         public IActionResult GetAccountDetails(long accountNumber)
         {

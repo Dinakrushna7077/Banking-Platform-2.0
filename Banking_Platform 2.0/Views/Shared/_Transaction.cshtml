@@ -1,7 +1,6 @@
 ﻿@model Banking_Platform_2._0.Models.DTO_Models.TransactionDTO
 
 <style>
-    /* Only what Bootstrap cannot do */
     .form-control {
         border-bottom: 2px solid #dee2e6 !important;
         border-top: none !important;
@@ -23,7 +22,6 @@
         margin: 0;
     }
 
-    /* Step indicator */
     .step-circle {
         width: 38px;
         height: 38px;
@@ -79,7 +77,6 @@
             background-color: #198754;
         }
 
-    /* Gradient account cards */
     .card-from {
         background: linear-gradient(135deg, #492bc4, #7b54e8);
         border-radius: 16px;
@@ -98,7 +95,6 @@
         color: #fdcc49;
     }
 
-    /* Confirm button */
     .btn-confirm {
         background: linear-gradient(135deg, #492bc4, #7b54e8);
         border: none;
@@ -168,7 +164,7 @@
                             Sender Account
                         </p>
                         <div class="mb-3 position-relative">
-                            <input asp-for="FromAcId"
+                            <input type="number"
                                    class="form-control ps-0"
                                    placeholder="Enter Sender Account Number"
                                    id="fromAccNo" autocomplete="off" />
@@ -180,7 +176,7 @@
                             Receiver Account
                         </p>
                         <div class="mb-4 position-relative">
-                            <input asp-for="ToAcId"
+                            <input type="number"
                                    class="form-control ps-0"
                                    placeholder="Enter Receiver Account Number"
                                    id="toAccNo" autocomplete="off" />
@@ -222,21 +218,21 @@
                         <p class="opacity-75 mb-3" style="font-size:13px; letter-spacing:.1em;" id="toAccNoDisplay">••••</p>
                         <hr class="border-white opacity-25 my-0 mb-2">
                         <p class="text-uppercase opacity-75 mb-0" style="font-size:11px;">Account Type</p>
-                        <p class="fw-bold fs-5 mb-0" id="toType">—</p>
+                        <p class="fw-bold fs-5 mb-0" id="toAccType">—</p>
                     </div>
 
                     
                     <div class="card border-0 shadow-sm rounded-4 p-4 mb-3"
                          style="background:#f8f6ff; border: 1px dashed #c5b8f5 !important;">
 
-                        <p class="text-uppercase fw-bold text-secondary small text-center mb-3">
+                        <p class="text-uppercase fw-bold text-secondary small text-start mb-3">
                             Enter Amount
                         </p>
 
                         <div class="position-relative mb-2">
                             <input asp-for="Amount"
                                    type="number"
-                                   class="form-control text-center ps-0 fs-4 fw-bold"
+                                   class="form-control text-start px-5 ps-0 fs-6 fw-bold"
                                    placeholder="₹ 0.00"
                                    id="transferAmount"
                                    min="1"
@@ -244,7 +240,19 @@
                             <i class="bi bi-currency-rupee position-absolute top-50 end-0 translate-middle-y text-primary me-1"></i>
                             <span asp-validation-for="Amount" class="text-danger small"></span>
                         </div>
-
+                        <div class="position-relative mb-2">
+                            <select asp-for="Remark" class="form-control text-start px-2 fs-6 fw-bold" id="remark">
+                                <option value="">---Select Remark---</option>
+                                <option value="Family/Friends/Gift">Family,Friends,Gift</option>
+                                <option value="Electricity Bill">Electricity Bill</option>
+                                <option value="Room Rent">Room Rent</option>
+                                <option value="Instalment">Instalment</option>
+                                <option value="Education">Education</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                            <span asp-validation-for="Remark" class="text-danger small"></span>
+                        </div>
+                        
                         <div class="d-flex justify-content-between px-1 mt-2">
                             <small class="text-muted">Balance after transfer</small>
                             <small class="fw-bold" id="balanceAfter">₹ —</small>
@@ -252,7 +260,9 @@
                     </div>
 
                     
-                    <input asp-for="TransferMode" type="hidden" value="IMPS" />
+                    <input asp-for="TransferMode" type="hidden" value="NEFT" />
+                    <input asp-for="FromAcId" type="hidden" id="fromAcId" />
+                    <input asp-for="ToAcId" type="hidden" id="toAcId" />
 
                     
                     <div class="d-flex gap-2">
@@ -279,75 +289,79 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
+}
     <script>
         $(document).ready(function () {
 
             let senderBalance = 0;
 
             // ── Find Accounts ─────────────────────────────────────────────────
-            $('#fetchNamesBtn').on('click', function () {
-                var fromAccNo = $('#fromAccNo').val().trim();
-                var toAccNo   = $('#toAccNo').val().trim();
+                $('#fetchNamesBtn').on('click', function () {
+        var fromAccNo = $('#fromAccNo').val().trim();
+        var toAccNo   = $('#toAccNo').val().trim();
 
-                if (!fromAccNo) { alert('Please enter sender account number.');   return; }
-                if (!toAccNo)   { alert('Please enter receiver account number.'); return; }
-                if (fromAccNo === toAccNo) {
-                    alert('Sender and receiver accounts cannot be the same.');
-                    return;
-                }
+        if (!fromAccNo) { alert('Please enter sender account number.');   return; }
+        if (!toAccNo)   { alert('Please enter receiver account number.'); return; }
+        if (fromAccNo === toAccNo) {
+            alert('Sender and receiver accounts cannot be the same.');
+            return;
+        }
 
-                var btn = $(this);
-                btn.prop('disabled', true)
-                   .html('<span class="spinner-border spinner-border-sm me-2"></span> Finding...');
+        var btn = $(this);
+        btn.prop('disabled', true)
+           .html('<span class="spinner-border spinner-border-sm me-2"></span> Finding...');
 
-                var fetchFrom = $.ajax({
-                    url: '@Url.Action("GetAccountDetails", "Admin")',
-                    type: 'GET',
-                    data: { accountNumber: fromAccNo }
-                });
+        $.ajax({
+            url: '@Url.Action("VerifySenderAccount", "Admin")', 
+            type: 'GET',
+            data: { fromAcc: fromAccNo, toAcc: toAccNo }
+        })
+        .done(function (response) {
+            btn.prop('disabled', false)
+               .html('<i class="bi bi-search me-2"></i> Find Accounts');
 
-                var fetchTo = $.ajax({
-                    url: '@Url.Action("GetAccountDetails", "Admin")',
-                    type: 'GET',
-                    data: { accountNumber: toAccNo }
-                });
+            if (!response.success || !response.data) {
+                alert(response.message || 'Failed to verify accounts.');
+                return;
+            }
 
-                $.when(fetchFrom, fetchTo).done(function (resFrom, resTo) {
-                    btn.prop('disabled', false)
-                       .html('<i class="bi bi-search me-2"></i> Find Accounts');
+            var sender   = response.data.sender;
+            var receiver = response.data.receiver;
 
-                    var from = resFrom[0];
-                    var to   = resTo[0];
+            if (!sender || !receiver) {
+                alert('One or both accounts could not be found.');
+                return;
+            }
 
-                    if (!from.success) { alert(from.message || 'Sender account not found.');   return; }
-                    if (!to.success)   { alert(to.message   || 'Receiver account not found.'); return; }
+            senderBalance = sender.availableBalance;
 
-                    senderBalance = from.balance;
+            $('#fromName').text(sender.fromName);
+            $('#fromAccNoDisplay').text(formatAccNo(fromAccNo));
+            $('#fromBalance').text('₹ ' + formatAmount(sender.availableBalance));
 
-                    // Populate cards
-                    $('#fromName').text(from.holderName);
-                    $('#fromAccNoDisplay').text(formatAccNo(fromAccNo));
-                    $('#fromBalance').text('₹ ' + formatAmount(from.balance));
+            $('#toName').text(receiver.toName);
+            $('#toAccType').text(receiver.toAccType);
+            $('#toAccNoDisplay').text(formatAccNo(toAccNo));
 
-                    $('#toName').text(to.holderName);
-                    $('#toAccNoDisplay').text(formatAccNo(toAccNo));
-                    $('#toType').text(to.accountType);
+            $('#fromAcId').val(sender.fromAccid);
+            $('#toAcId').val(receiver.toAccid);
 
-                    // Switch panels
-                    $('#panel1').addClass('d-none');
-                    $('#panel2').removeClass('d-none');
+            $('#panel1').addClass('d-none');
+            $('#panel2').removeClass('d-none');
 
-                    // Advance step indicator
-                    markDone(1);
-                    markActive(2);
+            markDone(1);
+            markActive(2);
+        })
+        .fail(function (xhr) {
+            btn.prop('disabled', false)
+               .html('<i class="bi bi-search me-2"></i> Find Accounts');
 
-                }).fail(function () {
-                    btn.prop('disabled', false)
-                       .html('<i class="bi bi-search me-2"></i> Find Accounts');
-                    alert('Error fetching account details. Please try again.');
-                });
-            });
+            var errorMsg = xhr.responseJSON && xhr.responseJSON.message
+                           ? xhr.responseJSON.message
+                           : 'Error fetching account details. Please try again.';
+            alert(errorMsg);
+        });
+    });
 
             // ── Back Button ───────────────────────────────────────────────────
             $('#backBtn').on('click', function () {
@@ -395,6 +409,10 @@
                 if (amount <= 0)            { alert('Enter a valid amount.'); return; }
                 if (amount > senderBalance) { alert('Insufficient balance.'); return; }
 
+                var remark = $('#remark').val();
+                if(remark==""){alert("Please Select Remark");return;}
+
+
                 var btn = $('#submitBtn');
                 btn.prop('disabled', true)
                    .html('<span class="spinner-border spinner-border-sm me-2"></span> Processing...');
@@ -405,6 +423,7 @@
                     data: $(this).serialize(),
                     success: function (response) {
                         $('#tgt').html(response);
+                        alert("Transaction Completed Successfully...");
                     },
                     error: function () {
                         btn.prop('disabled', false)
@@ -414,12 +433,10 @@
                 });
             });
 
-            // ── Enter key support ──────────────────────────────────────────────
             $('#fromAccNo, #toAccNo').on('keypress', function (e) {
                 if (e.which === 13) { e.preventDefault(); $('#fetchNamesBtn').trigger('click'); }
             });
 
-            // ── Step Helpers ───────────────────────────────────────────────────
             function markDone(n) {
                 $('#stepItem' + n).removeClass('active').addClass('done');
                 if ($('#stepLine' + n).length) $('#stepLine' + n).addClass('done');
@@ -441,7 +458,6 @@
                 markActive(1);
             }
 
-            // ── Format Helpers ─────────────────────────────────────────────────
             function formatAccNo(v) {
                 return v.replace(/(.{4})/g, '$1 ').trim();
             }
@@ -455,4 +471,3 @@
 
         });
     </script>
-}
