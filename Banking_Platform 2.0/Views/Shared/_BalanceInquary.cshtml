@@ -262,7 +262,7 @@
                         <p class="section-label">Account Number</p>
                         <div class="inputbox mb-0">
                             <div class="position-relative">
-                                <input type="text" id="searchAccNo" class="form-control"
+                                <input type="number" id="searchAccNo" class="form-control"
                                        placeholder="Enter Account Number" autocomplete="off" />
                                 <i class="bi bi-credit-card"></i>
                             </div>
@@ -286,7 +286,6 @@
                 </div>
             </div>
 
-            <!-- Results Section (hidden until verified) -->
             <div id="resultsSection" class="d-none">
 
                 <div class="row g-4">
@@ -401,7 +400,7 @@
                                     <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Description</th>
+                                            <th>Date & Time</th>
                                             <th>Type</th>
                                             <th class="text-end">Amount</th>
                                         </tr>
@@ -422,7 +421,6 @@
 
             </div>
 
-            <!-- Placeholder (shown before search) -->
             <div id="placeholderSection" class="text-center py-5">
                 <i class="bi bi-bank2" style="font-size:4rem; color:#c5b8f5;"></i>
                 <p class="mt-3 text-muted">Enter an account number above and click <strong>Check Balance</strong> to view account details.</p>
@@ -522,11 +520,11 @@
 
                 if (res.recentTransactions && res.recentTransactions.length > 0) {
                     res.recentTransactions.forEach(function (tx) {
-                        var isCredit = tx.type === 'Credit';
+                        var isCredit = tx.type === 'Deposit';
                         tbody.append(
                             '<tr>' +
-                            '<td>' + tx.date + '</td>' +
-                            '<td>' + tx.description + '</td>' +
+                            '<td>' + tx.transactionId+ '</td>' +
+                            '<td>' + tx.timestamp  + '</td>' +
                             '<td><span class="' + (isCredit ? 'badge-credit' : 'badge-debit') + '">' + tx.type + '</span></td>' +
                             '<td class="text-end fw-bold ' + (isCredit ? 'text-success' : 'text-danger') + '">' +
                             (isCredit ? '+' : '-') + '₹ ' + formatAmount(tx.amount) +

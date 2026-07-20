@@ -3,6 +3,7 @@
     public class CheckBalanceDTO
     {
         public long AccNo { get; set; }
+        public long AccId { get; set; }
         public string CustomerName { get; set; }
         public string AccType { get; set; }
         public decimal Balance { get; set; }

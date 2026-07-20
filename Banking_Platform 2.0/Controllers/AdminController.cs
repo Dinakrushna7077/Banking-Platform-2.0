@@ -4,6 +4,7 @@ using Banking_Platform_2._0.Models.DTO_Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -462,6 +463,7 @@ namespace Banking_Platform_2._0.Controllers
                     where a.AccountNo == accountNumber
                     select new CheckBalanceDTO
                     {
+                        AccId=a.AccId,
                         AccNo = a.AccountNo,
                         CustomerName = c.Name,
                         Mobile = Convert.ToInt64(u.PhoneNo),
@@ -473,8 +475,10 @@ namespace Banking_Platform_2._0.Controllers
                         Status = a.Status == true ? "Active" : "Closed"
                     }
                 ).FirstOrDefaultAsync();
+                int currMonth=DateTime.Now.Month;
+                int currYear=DateTime.Now.Year;
                 var summary = await db.Transactions
-                   .Where(t => t.FromAcId == accountNumber)
+                   .Where(t => t.FromAcId == accDetails.AccId || t.ToAcId==accDetails.AccId && t.Timestamp.Value.Month ==currMonth && t.Timestamp.Value.Year ==currYear)
                    .GroupBy(t => 1)
                    .Select(g => new
                    {
@@ -485,13 +489,14 @@ namespace Banking_Platform_2._0.Controllers
                    .FirstOrDefaultAsync();
 
                 var lastTransaction = await db.Transactions
-                    .Where(t => t.FromAcId == accountNumber).Select(x => new LastTransactionDTO
+                    .Where(t => t.FromAcId == accDetails.AccId||t.ToAcId==accDetails.AccId).Select(x => new LastTransactionDTO
                     {
                         FromAcId = x.FromAcId,
                         ToAcId = x.ToAcId,
                         Amount = x.Amount,
                         Type = x.Type,
-                        Timestamp = x.Timestamp
+                        Timestamp = x.Timestamp,
+                        TransactionId = x.TransactionId
 
                     })
                     .OrderByDescending(t => t.Timestamp).Take(5)
@@ -513,9 +518,8 @@ namespace Banking_Platform_2._0.Controllers
                     totalDebits = summary?.Deposit ?? 0,
                     totalTransactions = summary?.TransactionCount ?? 0,
                     lastTransactionDate = lastTransaction?.FirstOrDefault()?.Timestamp,
-                    recentTransactions = new[] {
-                    new { date = lastTransaction},
-                    }
+                    recentTransactions =lastTransaction
+                    
                 });
             }
             catch (Exception ex)
