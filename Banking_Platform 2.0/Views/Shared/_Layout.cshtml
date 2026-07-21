@@ -30,7 +30,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bank-body sticky-top bank-navbar" id="mainNavbar">
+        <nav class="navbar navbar-expand-lg navbar-light bank-body fixed-top bank-navbar" id="mainNavbar">
             <div class="container-fluid">
                 <i class="fa-solid fa-building-columns fs-3 text-dark nav-link px-1"></i>
                 <a class="navbar-brand text-dark fw-bold" asp-area="" asp-controller="Home" asp-action="Index">URBAN BANK</a>
@@ -57,7 +57,7 @@
                         @if (role == 0)
                         {
                             <li class="nav-item d-flex">
-                                <a asp-area="" asp-controller="User" asp-action="Register" class="nav-link text-dark">User Register</a>
+                                <a asp-area="" asp-controller="User" asp-action="Register" class="nav-link text-dark">Register</a>
                                 @* @Html.ActionLink("User Register", "UserResister", "Admin", new { area = "" }, new { @class = "nav-link text-dark" }) *@
                             </li>
                             <li class="nav-item">
@@ -77,7 +77,7 @@
         </nav>
     </header>
     <div class="container-fluid">
-        <main role="main" class="pb-3">
+        <main role="main" class=" mt-4">
             @RenderBody()
         </main>
     </div>
