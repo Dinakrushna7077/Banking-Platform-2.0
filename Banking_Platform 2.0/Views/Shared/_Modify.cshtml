@@ -365,9 +365,9 @@
         // Personal
         $('input[name="Name"]').val(data.name);
         var genderVal = data.gender;
-        if (genderVal === "M") genderVal = "Male";
-        if (genderVal === "F") genderVal = "Female";
-        if (genderVal === "O") genderVal = "Other";
+        // if (genderVal === "M") genderVal = "Male";
+        // if (genderVal === "F") genderVal = "Female";
+        // if (genderVal === "O") genderVal = "Other";
 
         $('input[name="Gender"][value="' + genderVal + '"]').prop('checked', true);
             $('input[name="FatherName"]').val(data.fatherName);
